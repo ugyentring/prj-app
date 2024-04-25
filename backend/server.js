@@ -15,6 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
+//continue from here with user routes
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
