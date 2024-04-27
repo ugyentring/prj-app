@@ -1,5 +1,6 @@
 import Post from "../models/postModel.js";
 import User from "../models/userModel.js";
+import Notification from "../models/notifyModel.js";
 import { v2 as cloudinary } from "cloudinary";
 
 // create post logic
@@ -100,6 +101,44 @@ export const commentPost = async (req, res) => {
 };
 
 //like/unlike post
-export const likeUnlikePost = () => {
+export const likeUnlikePost = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { id: postId } = req.params;
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    const userLikedPost = post.likes.includes(userId);
+
+    if (userLikedPost) {
+      //unlike if you already liked
+      await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
+      return res.status(200).json({ message: "Post unliked successfully" });
+    } else {
+      //like if it isnt liked ulready
+      post.likes.push(userId);
+      await post.save();
+    }
+
+    const notification = new Notification({
+      from: userId,
+      to: post.user,
+      type: "like",
+    });
+    await notification.save();
+
+    return res.status(200).json({ message: "Post Liked successfully" });
+  } catch (error) {
+    console.log("Error in the likeUnlikePost controller: ", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+//getting all the post
+export const getAllPosts = async (req, res) => {
   
 }
