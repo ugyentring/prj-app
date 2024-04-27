@@ -1,7 +1,9 @@
 const Logo = () => {
   return (
     <div className="flex items-center">
-      <span className="text-2xl font-extrabold font-sans">NorbNode</span>
+      <span className="text-sm md:text-2xl lg:text-3xl xl:text-4xl font-extrabold font-sans">
+        NorbNode
+      </span>
     </div>
   );
 };

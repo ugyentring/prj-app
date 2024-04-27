@@ -1,5 +1,5 @@
-import { CiImageOn } from "react-icons/ci";
-import { BsEmojiSmileFill } from "react-icons/bs";
+import { IoImageOutline } from "react-icons/io5";
+import { BsEmojiHeartEyes } from "react-icons/bs";
 import { useRef, useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
 
@@ -43,7 +43,8 @@ const CreatePost = () => {
       <form className="flex flex-col gap-2 w-full" onSubmit={handleSubmit}>
         <textarea
           className="textarea w-full p-0 text-lg resize-none border-none focus:outline-none  border-gray-800"
-          placeholder="What is happening?!"
+          placeholder="What's on your mind?
+          "
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
@@ -76,11 +77,11 @@ const CreatePost = () => {
 
         <div className="flex justify-between border-t py-2 border-t-gray-700">
           <div className="flex gap-1 items-center">
-            <CiImageOn
+            <IoImageOutline
               className="w-6 h-6 cursor-pointer text-green-700"
               onClick={() => imgRef.current.click()}
             />
-            <BsEmojiSmileFill className="w-5 h-5 cursor-pointer text-green-700" />
+            <BsEmojiHeartEyes className="w-5 h-5 cursor-pointer text-green-700" />
           </div>
           <input
             type="file"
