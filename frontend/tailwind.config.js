@@ -4,16 +4,7 @@ import daisyUIThemes from "daisyui/src/theming/themes";
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {
-      colors: {
-        green: {
-          DEFAULT: "#00FF00",
-        },
-      },
-      backgroundColor: {
-        white: "#FFFFFF",
-      },
-    },
+    extend: {},
   },
   plugins: [daisyui],
 
