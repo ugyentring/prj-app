@@ -1,8 +1,8 @@
 import Logo from "../logo/Logo";
 
-import { MdHomeFilled } from "react-icons/md";
-import { IoNotifications } from "react-icons/io5";
-import { FaUser } from "react-icons/fa";
+import { RiHome4Line } from "react-icons/ri";
+import { GrNotification } from "react-icons/gr";
+import { FaRegUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
 
@@ -25,7 +25,7 @@ const Sidebar = () => {
               to="/"
               className="flex gap-3 items-center menu-item hover:bg-green-700 hover:text-white transition-all rounded-full duration-300 py-2 pl-2 pr-4 max-w-fit cursor-pointer"
             >
-              <MdHomeFilled className="w-8 h-8" />
+              <RiHome4Line className="w-8 h-8" />
               <span className="text-lg hidden md:block">Home</span>
             </Link>
           </li>
@@ -34,7 +34,7 @@ const Sidebar = () => {
               to="/notifications"
               className="flex gap-3 items-center menu-item hover:bg-green-700 hover:text-white transition-all rounded-full duration-300 py-2 pl-2 pr-4 max-w-fit cursor-pointer"
             >
-              <IoNotifications className="w-6 h-6" />
+              <GrNotification className="w-6 h-6" />
               <span className="text-lg hidden md:block">Notifications</span>
             </Link>
           </li>
@@ -43,7 +43,7 @@ const Sidebar = () => {
               to={`/profile/${data?.username}`}
               className="flex gap-3 items-center menu-item hover:bg-green-700 hover:text-white transition-all rounded-full duration-300 py-2 pl-2 pr-4 max-w-fit cursor-pointer"
             >
-              <FaUser className="w-6 h-6" />
+              <FaRegUser className="w-6 h-6" />
               <span className="text-lg hidden md:block">Profile</span>
             </Link>
           </li>
