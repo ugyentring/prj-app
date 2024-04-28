@@ -87,12 +87,14 @@ const ProfilePage = () => {
 
                 <input
                   type="file"
+                  accept="image/*"
                   hidden
                   ref={coverImgRef}
                   onChange={(e) => handleImgChange(e, "coverImg")}
                 />
                 <input
                   type="file"
+                  accept="image/*"
                   hidden
                   ref={profileImgRef}
                   onChange={(e) => handleImgChange(e, "profileImg")}
@@ -165,9 +167,7 @@ const ProfilePage = () => {
                   )}
                   <div className="flex gap-2 items-center">
                     <SlCalender className="w-4 h-4 text-green-700" />
-                    <span className="text-sm text-black">
-                      Joined May 2024
-                    </span>
+                    <span className="text-sm text-black">Joined May 2024</span>
                   </div>
                 </div>
                 <div className="flex gap-2">
