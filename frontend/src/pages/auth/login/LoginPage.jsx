@@ -46,7 +46,6 @@ const LoginPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     loginMutation(formData);
-    console.log(formData);
   };
 
   const handleInputChange = (e) => {

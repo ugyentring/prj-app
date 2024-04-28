@@ -5,7 +5,7 @@ import { GrNotification } from "react-icons/gr";
 import { FaRegUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 
 const Sidebar = () => {
@@ -34,11 +34,7 @@ const Sidebar = () => {
     },
   });
 
-  const data = {
-    fullName: "John Doe",
-    username: "johndoe",
-    profileImage: "/avatars/boy1.png",
-  };
+  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
 
   return (
     <div className="md:flex-[2_2_0] w-18 max-w-52">
@@ -67,7 +63,7 @@ const Sidebar = () => {
           </li>
           <li className="flex justify-center md:justify-start">
             <Link
-              to={`/profile/${data?.username}`}
+              to={`/profile/${authUser?.username}`}
               className="flex gap-3 items-center menu-item hover:bg-green-700 hover:text-white transition-all rounded-full duration-300 py-2 pl-2 pr-4 max-w-fit cursor-pointer"
             >
               <FaRegUser className="w-6 h-6" />
@@ -75,23 +71,25 @@ const Sidebar = () => {
             </Link>
           </li>
         </ul>
-        {data && (
+        {authUser && (
           <Link
-            to={`/profile/${data.username}`}
+            to={`/profile/${authUser.username}`}
             className="mt-auto mb-10 flex gap-2 items-start transition-all duration-300 hover:bg-green-700 py-2 px-4 rounded-full"
           >
             <div className="avatar hidden md:inline-flex">
               <div className="w-8 rounded-full">
-                <img src={data?.profileImage || "/avatar-placeholder.png"} />
+                <img
+                  src={authUser?.profileImage || "/avatar-placeholder.png"}
+                />
               </div>
             </div>
             <div className="flex justify-between flex-1">
               <div className="hidden md:block">
                 <p className="text-black font-bold text-sm w-20 truncate hover:text-white">
-                  {data?.fullName}
+                  {authUser?.fullName}
                 </p>
                 <p className="text-slate-500 text-sm hover:text-white">
-                  @{data?.username}
+                  @{authUser?.username}
                 </p>
               </div>
               <BiLogOut
