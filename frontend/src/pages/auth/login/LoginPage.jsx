@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import Logo from "../../../components/logo/Logo";
 import { MdOutlineMail } from "react-icons/md";
 import { MdPassword } from "react-icons/md";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-hot-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
+
+  const queryClient = useQueryClient();
 
   const {
     mutate: loginMutation,
@@ -39,7 +39,7 @@ const LoginPage = () => {
       }
     },
     onSuccess: () => {
-      toast.success("Login successful");
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
     },
   });
 
@@ -55,12 +55,10 @@ const LoginPage = () => {
 
   return (
     <div className="max-w-screen-xl mx-auto flex h-screen">
-      <div className="flex-1 hidden lg:flex items-center  justify-center mr-20">
-        <Logo />
-      </div>
+      <div className="flex-1 hidden lg:flex items-center  justify-center mr-20"></div>
       <div className="flex-1 flex flex-col justify-center items-center">
         <form className="flex gap-4 flex-col" onSubmit={handleSubmit}>
-          <h1 className="text-4xl font-extrabold text-black">{"Let's"} go.</h1>
+          <h1 className="text-4xl font-extrabold text-black">{"Login"}.</h1>
           <label className="input input-bordered rounded flex items-center gap-2">
             <MdOutlineMail />
             <input

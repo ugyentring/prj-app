@@ -1,8 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
-import Logo from "../../../components/logo/Logo";
-
 import { MdOutlineMail } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
@@ -56,15 +54,13 @@ const SignUpPage = () => {
 
   return (
     <div className="max-w-screen-xl mx-auto flex h-screen px-10">
-      <div className="flex-1 hidden lg:flex items-center  justify-center">
-        <Logo />
-      </div>
+      <div className="flex-1 hidden lg:flex items-center  justify-center"></div>
       <div className="flex-1 flex flex-col justify-center items-center">
         <form
           className="lg:w-2/3  mx-auto md:mx-20 flex gap-4 flex-col"
           onSubmit={handleSubmit}
         >
-          <h1 className="text-4xl font-extrabold text-black">Join today.</h1>
+          <h1 className="text-4xl font-extrabold text-black">SignUp today.</h1>
           <label className="input input-bordered rounded flex items-center gap-2">
             <MdOutlineMail />
             <input
