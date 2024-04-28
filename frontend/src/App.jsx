@@ -6,6 +6,7 @@ import Sidebar from "./components/common/Sidebar";
 import RightPanel from "./components/common/RightPanel";
 import ProfilePage from "./pages/profile/ProfilePage";
 import NotificationPage from "./pages/notification/NotificationPage";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/notifications" element={<NotificationPage />} />
       </Routes>
       <RightPanel />
+      <Toaster />
     </div>
   );
 };
