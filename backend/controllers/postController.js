@@ -60,8 +60,8 @@ export const deletePost = async (req, res) => {
     }
 
     //delete image from cloudinary too
-    const imageId = post.img.split("/").pop().split(".")[0];
-    await cloudinary.uploader.destroy(imageId);
+    // const imageId = post.img.split("/").pop().split(".")[0];
+    // await cloudinary.uploader.destroy(imageId);
 
     //delete from database
     await Post.findByIdAndDelete(req.params.id);
