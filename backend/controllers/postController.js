@@ -115,27 +115,32 @@ export const likeUnlikePost = async (req, res) => {
     const userLikedPost = post.likes.includes(userId);
 
     if (userLikedPost) {
-      //unlike if you already liked
+      // Unlike post
       await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
       await User.updateOne({ _id: userId }, { $pull: { likedPosts: postId } });
-      res.status(200).json({ message: "Post unliked successfully" });
+
+      const updatedLikes = post.likes.filter(
+        (id) => id.toString() !== userId.toString()
+      );
+      res.status(200).json(updatedLikes);
     } else {
-      //like if it isnt liked ulready
+      // Like post
       post.likes.push(userId);
       await User.updateOne({ _id: userId }, { $push: { likedPosts: postId } });
       await post.save();
+
+      const notification = new Notification({
+        from: userId,
+        to: post.user,
+        type: "like",
+      });
+      await notification.save();
+
+      const updatedLikes = post.likes;
+      res.status(200).json(updatedLikes);
     }
-
-    const notification = new Notification({
-      from: userId,
-      to: post.user,
-      type: "like",
-    });
-    await notification.save();
-
-    return res.status(200).json({ message: "Post Liked successfully" });
   } catch (error) {
-    console.log("Error in the likeUnlikePost controller: ", error);
+    console.log("Error in likeUnlikePost controller: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
