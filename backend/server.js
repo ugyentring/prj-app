@@ -7,7 +7,7 @@ import connectDB from "./DB/connectDB.js";
 import authRoutes from "./routes/authRoute.js";
 import userRoutes from "./routes/userRoute.js";
 import postRoutes from "./routes/postRoute.js";
-import notificationRoutes from "./routes/notificationRoute.js"
+import notificationRoutes from "./routes/notificationRoute.js";
 
 dotenv.config();
 
@@ -21,7 +21,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 //third party middleware to handle different types of data
-app.use(express.json());
+app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
