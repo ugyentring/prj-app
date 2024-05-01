@@ -4,22 +4,22 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 const Posts = ({ feedType, username, userId }) => {
-  const getPostEndpoints = () => {
+  const getPostEndpoint = () => {
     switch (feedType) {
       case "forYou":
-        return "api/posts/all";
+        return "/api/posts/all";
       case "following":
-        return "api/posts/following";
+        return "/api/posts/following";
       case "posts":
         return `/api/posts/user/${username}`;
       case "likes":
         return `/api/posts/likes/${userId}`;
       default:
-        return "api/posts/all";
+        return "/api/posts/all";
     }
   };
 
-  const POST_ENDPOINT = getPostEndpoints();
+  const POST_ENDPOINT = getPostEndpoint();
 
   const {
     data: posts,
@@ -31,15 +31,16 @@ const Posts = ({ feedType, username, userId }) => {
     queryFn: async () => {
       try {
         const res = await fetch(POST_ENDPOINT);
-        const data = await res.json();
-
         if (!res.ok) {
-          throw new Error(data.error || "Somthing went wrong");
+          const errorData = await res.json();
+          throw new Error(errorData.error || "Something went wrong");
         }
-
+        const data = await res.json();
         return data;
       } catch (error) {
-        throw new Error(error);
+        throw new Error(
+          error.message || "An error occurred while fetching posts"
+        );
       }
     },
   });
@@ -70,4 +71,5 @@ const Posts = ({ feedType, username, userId }) => {
     </>
   );
 };
+
 export default Posts;

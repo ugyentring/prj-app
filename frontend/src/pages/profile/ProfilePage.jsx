@@ -39,6 +39,9 @@ const ProfilePage = () => {
     queryKey: ["userProfile"],
     queryFn: async () => {
       try {
+        if (!username) {
+          throw new Error("Username is not defined");
+        }
         const res = await fetch(`/api/users/profile/${username}`);
         const data = await res.json();
         if (!res.ok) {
