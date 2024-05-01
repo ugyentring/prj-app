@@ -58,7 +58,7 @@ const userSchema = new Schema(
       default: "",
     },
 
-    Link: {
+    link: {
       type: String,
       default: "",
     },

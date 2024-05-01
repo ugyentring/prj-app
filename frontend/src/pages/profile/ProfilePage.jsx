@@ -39,9 +39,6 @@ const ProfilePage = () => {
     queryKey: ["userProfile"],
     queryFn: async () => {
       try {
-        if (!username) {
-          throw new Error("Username is not defined");
-        }
         const res = await fetch(`/api/users/profile/${username}`);
         const data = await res.json();
         if (!res.ok) {
@@ -163,7 +160,7 @@ const ProfilePage = () => {
                 )}
                 {(coverImage || profileImage) && (
                   <button
-                    className="btn btn-primary rounded-full btn-sm text-white px-4 ml-2"
+                    className="btn bg-green-700 rounded-full btn-sm text-white px-4 ml-2"
                     onClick={async () => {
                       await updateProfile({ coverImage, profileImage });
                       setProfileImg(null);
@@ -188,12 +185,12 @@ const ProfilePage = () => {
                   {user?.link && (
                     <div className="flex gap-1 items-center ">
                       <>
-                        <FaLink className="w-3 h-3 text-slate-500" />
+                        <FaLink className="w-3 h-3 text-green-700" />
                         <a
                           href="https://youtube.com/@ugyenofficial"
                           target="_blank"
                           rel="noreferrer"
-                          className="text-sm text-blue-500 hover:underline"
+                          className="text-sm text-green-700 hover:underline"
                         >
                           {user?.link}
                         </a>
