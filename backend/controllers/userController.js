@@ -116,7 +116,7 @@ export const updateUserProfile = async (req, res) => {
     ) {
       return res
         .status(400)
-        .json({ Error: "Please provide bot current and the new password" });
+        .json({ Error: "Please provide both current and the new password" });
     }
 
     //check to see if the current password is correct
