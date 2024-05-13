@@ -16,6 +16,18 @@ const Post = ({ post }) => {
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
   const queryClient = useQueryClient();
 
+  const [copySuccess, setCopySuccess] = useState("");
+
+  //copy functionlity
+  const copyToClipBoard = async (walletAddress) => {
+    try {
+      await navigator.clipboard.writeText(walletAddress);
+      setCopySuccess("Copied!");
+    } catch (err) {
+      setCopySuccess("Failed to copy!");
+    }
+  };
+
   //Logic to delete post
   const { mutate: deletePost, isPending: isDeleting } = useMutation({
     mutationFn: async () => {
@@ -55,8 +67,6 @@ const Post = ({ post }) => {
       }
     },
     onSuccess: (updatedLikes) => {
-      //this not not good way as it refetch all post
-      // queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.setQueryData(["posts"], (oldData) => {
         return oldData.map((p) => {
           if (p._id === post._id) {
@@ -160,9 +170,15 @@ const Post = ({ post }) => {
             )}
           </div>
           {/*post*/}
-          <div className="flex flex-col gap-3 overflow-hidden">
+          <div className="flex flex-col gap-3 overflow-hidden ">
             <span>{post.text}</span>
-            <span>{post.walletAddress}</span>
+            <span
+              className="cursor-pointer hover:bg-slate-400"
+              onClick={() => copyToClipBoard(post.walletAddress)}
+            >
+              {post.walletAddress}
+            </span>
+            {copySuccess}
             {post.img && (
               <img
                 src={post.img}
