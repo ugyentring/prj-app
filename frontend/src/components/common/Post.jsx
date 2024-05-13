@@ -1,7 +1,7 @@
 import { BiComment } from "react-icons/bi";
 import { CiShare2 } from "react-icons/ci";
 import { BiUpvote } from "react-icons/bi";
-import { BsBookmarkHeart } from "react-icons/bs";
+import { CiGift } from "react-icons/ci";
 import { FaTrash } from "react-icons/fa";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -288,7 +288,7 @@ const Post = ({ post }) => {
               </div>
             </div>
             <div className="flex w-1/3 justify-end gap-2 items-center">
-              <BsBookmarkHeart className="w-4 h-4 text-slate-500 cursor-pointer" />
+              <CiGift className="w-4 h-4 text-slate-500 cursor-pointer" />
             </div>
           </div>
         </div>
