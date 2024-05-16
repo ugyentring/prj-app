@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import SignUpPage from "./pages/auth/signUp/SignUpPage";
 import LoginPage from "./pages/auth/login/LoginPage";
 import HomePage from "./pages/home/HomePage";
@@ -30,6 +30,9 @@ const App = () => {
     retry: false,
   });
 
+  const location = useLocation();
+  const isModelsRoute = location.pathname === "/model";
+
   if (isLoading) {
     return (
       <div className="h-screen flex justify-center items-center">
@@ -40,13 +43,9 @@ const App = () => {
 
   return (
     <>
-      <Routes>
-        <Route to="/model" element={<Models />} />
-      </Routes>
       <div className="flex max-w-6xl mx-auto">
-        {authUser && <Sidebar />}
+        {authUser && !isModelsRoute && <Sidebar />}
         <Routes>
-          <Route path="/model" element={<Models />} />
           <Route
             path="/"
             element={authUser ? <HomePage /> : <Navigate to="/login" />}
@@ -67,9 +66,9 @@ const App = () => {
             path="/notifications"
             element={authUser ? <NotificationPage /> : <Navigate to="/login" />}
           />
+          <Route path="/model" element={<Models />} />
         </Routes>
-        {authUser && <RightPanel />}
-
+        {authUser && !isModelsRoute && <RightPanel />}
         <Toaster />
       </div>
     </>

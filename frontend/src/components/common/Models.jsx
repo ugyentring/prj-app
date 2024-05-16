@@ -11,7 +11,6 @@ const Models = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    addToBlockchain();
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", handleAccountsChanged);
     }
@@ -52,6 +51,7 @@ const Models = () => {
     }
   }
 
+  //connect metamask wallet
   async function connectToMetamask() {
     if (window.ethereum) {
       try {
@@ -82,44 +82,26 @@ const Models = () => {
   }
 
   return (
-    <div className="mt-10 flex flex-col gap-5 text-black">
-      <div className="bg-indigo-600 rounded-xl px-20 py-10 flex flex-col gap-5 items-center mx-4">
-        <form className="flex flex-col">
+    <div className="mt-20 flex flex-col gap-5 text-black max-w-3xl mx-auto">
+      <div className="bg-indigo-600 rounded-xl px-20 py-10 flex flex-col gap-5 items-center mt-20">
+        <form className="flex flex-col w-full">
           <input
             type="text"
             placeholder="Enter the wallet address"
             required
-            style={{
-              marginBottom: "10px",
-              padding: "5px",
-              border: "none",
-              outline: "none",
-              borderRadius: "2px",
-            }}
+            className="mb-5 p-3 border rounded-md outline-none"
           />
           <input
             type="number"
             placeholder="Enter the amount"
             required
-            style={{
-              marginBottom: "10px",
-              padding: "5px",
-              border: "none",
-              outline: "none",
-              borderRadius: "2px",
-            }}
+            className="mb-5 p-3 border rounded-md outline-none"
           />
           <input
             type="text"
             placeholder="Enter your message"
             required
-            style={{
-              marginBottom: "10px",
-              padding: "5px",
-              border: "none",
-              outline: "none",
-              borderRadius: "2px",
-            }}
+            className="mb-5 p-3 border rounded-md outline-none"
           />
         </form>
       </div>
@@ -127,14 +109,15 @@ const Models = () => {
         {!isConnected && (
           <button
             onClick={connectToMetamask}
-            className="bg-blue-800 rounded-md py-1 w-30 text-white px-2"
+            className="bg-blue-800 rounded-md py-2 px-4 text-white mb-5"
           >
             Connect Wallet
           </button>
         )}
-
-        <br />
-        <button className="bg-green-700 rounded-md py-1 w-30 text-white px-3">
+        <button
+          onClick={addToBlockchain}
+          className="bg-green-700 rounded-md py-2 px-4 text-white"
+        >
           Send Amount
         </button>
       </div>
