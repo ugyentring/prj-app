@@ -24,12 +24,18 @@ const Models = () => {
     };
   });
 
-  async function addToBlockchain(receiver, amount, message) {
+  async function addToBlockchain() {
     try {
       if (!provider) {
         console.error("Ethereum provider is not initialized");
         return;
       }
+
+      const receiver = document.getElementById("walletAddress").value;
+      const amountEth = document.getElementById("amount").value;
+      const amountWei = ethers.utils.parseEther(amountEth);
+      const message = document.getElementById("message").value;
+
       const signer = provider.getSigner();
 
       const contractInstance = new ethers.Contract(
@@ -39,11 +45,12 @@ const Models = () => {
       );
       const transaction = await contractInstance.addToBlockchain(
         receiver,
-        amount,
+        amountWei,
         message
       );
 
       await transaction.wait();
+      navigate("/");
 
       console.log("Transaction successful!");
     } catch (error) {
@@ -87,18 +94,21 @@ const Models = () => {
         <form className="flex flex-col w-full">
           <input
             type="text"
+            id="walletAddress"
             placeholder="Enter the wallet address"
             required
             className="mb-5 p-3 border rounded-md outline-none"
           />
           <input
             type="number"
-            placeholder="Enter the amount"
+            id="amount"
+            placeholder="Amount in wei"
             required
             className="mb-5 p-3 border rounded-md outline-none"
           />
           <input
             type="text"
+            id="message"
             placeholder="Enter your message"
             required
             className="mb-5 p-3 border rounded-md outline-none"
@@ -109,17 +119,19 @@ const Models = () => {
         {!isConnected && (
           <button
             onClick={connectToMetamask}
-            className="bg-blue-800 rounded-md py-2 px-4 text-white mb-5"
+            className="bg-blue-800 rounded-md py-2 px-4 text-white text-base mb-5"
           >
             Connect Wallet
           </button>
         )}
-        <button
-          onClick={addToBlockchain}
-          className="bg-green-700 rounded-md py-2 px-4 text-white"
-        >
-          Send Amount
-        </button>
+        {isConnected && (
+          <button
+            onClick={addToBlockchain}
+            className="bg-green-700 rounded-md py-2 px-4 text-white"
+          >
+            Send Amount
+          </button>
+        )}
       </div>
     </div>
   );
