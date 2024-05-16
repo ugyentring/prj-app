@@ -9,6 +9,7 @@ import NotificationPage from "./pages/notification/NotificationPage";
 import { Toaster } from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "./components/common/LoadingSpinner";
+import Models from "./components/common/Models";
 
 const App = () => {
   const { data: authUser, isLoading } = useQuery({
@@ -38,33 +39,40 @@ const App = () => {
   }
 
   return (
-    <div className="flex max-w-6xl mx-auto">
-      {authUser && <Sidebar />}
+    <>
       <Routes>
-        <Route
-          path="/"
-          element={authUser ? <HomePage /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/login"
-          element={!authUser ? <LoginPage /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/signup"
-          element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/profile/:username"
-          element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/notifications"
-          element={authUser ? <NotificationPage /> : <Navigate to="/login" />}
-        />
+        <Route to="/model" element={<Models />} />
       </Routes>
-      {authUser && <RightPanel />}
-      <Toaster />
-    </div>
+      <div className="flex max-w-6xl mx-auto">
+        {authUser && <Sidebar />}
+        <Routes>
+          <Route path="/model" element={<Models />} />
+          <Route
+            path="/"
+            element={authUser ? <HomePage /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/login"
+            element={!authUser ? <LoginPage /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/signup"
+            element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/profile/:username"
+            element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/notifications"
+            element={authUser ? <NotificationPage /> : <Navigate to="/login" />}
+          />
+        </Routes>
+        {authUser && <RightPanel />}
+
+        <Toaster />
+      </div>
+    </>
   );
 };
 
