@@ -172,7 +172,7 @@ const Post = ({ post }) => {
           <div className="flex flex-col gap-3 overflow-hidden ">
             <span>{post.text}</span>
             <span
-              className="cursor-pointer hover:bg-slate-400 p-5 rounded-sm"
+              className="cursor-pointer hover:bg-slate-400 p-5 rounded-sm text-sm font-semibold"
               onClick={() => copyToClipBoard(post.walletAddress)}
             >
               {post.walletAddress}
