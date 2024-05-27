@@ -116,7 +116,6 @@ const Post = ({ post }) => {
   const isLiked = post.likes.includes(authUser._id);
 
   const isMyPost = authUser._id === post.user._id;
-
   const formattedDate = formatPostDate(post.createdAt);
 
   const handleDeletePost = () => {
@@ -173,7 +172,7 @@ const Post = ({ post }) => {
           <div className="flex flex-col gap-3 overflow-hidden ">
             <span>{post.text}</span>
             <span
-              className="cursor-pointer hover:bg-slate-400"
+              className="cursor-pointer hover:bg-slate-400 p-5 rounded-sm text-sm font-semibold"
               onClick={() => copyToClipBoard(post.walletAddress)}
             >
               {post.walletAddress}
@@ -288,7 +287,9 @@ const Post = ({ post }) => {
               </div>
             </div>
             <div className="flex w-1/3 justify-end gap-2 items-center">
-              <CiGift className="w-4 h-4 text-slate-500 cursor-pointer" />
+              <Link to="/model">
+                <CiGift className="w-4 h-4 text-slate-500 cursor-pointer" />
+              </Link>
             </div>
           </div>
         </div>
