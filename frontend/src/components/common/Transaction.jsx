@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-// import { TransactionContext } from "../context/TransactionContext";
+import { TransactionContext } from "../context/TransactionContext";
 
 // import dummyData from "../utils/dummyData";
 import { shortenAddress } from "../../utils/shortenAddress.js";
@@ -25,7 +25,7 @@ const TransactionsCard = ({
       <div className="flex flex-col items-center w-full mt-3">
         <div className="display-flex justify-start w-full mb-6 p-2">
           <a
-            href={`https://ropsten.etherscan.io/address/${addressFrom}`}
+            href={`https://sepolia.etherscan.io/address/${addressFrom}`}
             target="_blank"
             rel="noreferrer"
           >
@@ -34,7 +34,7 @@ const TransactionsCard = ({
             </p>
           </a>
           <a
-            href={`https://ropsten.etherscan.io/address/${addressTo}`}
+            href={`https://sepolia.etherscan.io/address/${addressTo}`}
             target="_blank"
             rel="noreferrer"
           >
