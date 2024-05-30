@@ -21,11 +21,16 @@ const ProfilePage = () => {
   const coverImgRef = useRef(null);
   const profileImgRef = useRef(null);
   const { username } = useParams();
-  
+
   const { follow, isPending } = useFollow();
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
 
-  const { data: user, isLoading, refetch, isRefetching } = useQuery({
+  const {
+    data: user,
+    isLoading,
+    refetch,
+    isRefetching,
+  } = useQuery({
     queryKey: ["userProfile"],
     queryFn: async () => {
       try {
@@ -115,13 +120,15 @@ const ProfilePage = () => {
                 ref={profileImgRef}
                 onChange={(e) => handleImgChange(e, "profileImage")}
               />
-              
+
               {/* User Avatar */}
               <div className="avatar absolute -bottom-16 left-4">
                 <div className="w-32 rounded-full relative group/avatar">
                   <img
                     src={
-                      profileImage || user?.profileImage || "/avatar-placeholder.png"
+                      profileImage ||
+                      user?.profileImage ||
+                      "/avatar-placeholder.png"
                     }
                   />
                   {isMyProfile && (
@@ -144,7 +151,11 @@ const ProfilePage = () => {
                   className="btn btn-outline rounded-full btn-sm"
                   onClick={() => follow(user?._id)}
                 >
-                  {isPending ? "Loading..." : amIFollowing ? "Unfollow" : "Follow"}
+                  {isPending
+                    ? "Loading..."
+                    : amIFollowing
+                    ? "Unfollow"
+                    : "Follow"}
                 </button>
               )}
               {(coverImage || profileImage) && (
@@ -165,7 +176,9 @@ const ProfilePage = () => {
             <div className="flex flex-col gap-4 mt-14 px-4">
               <div className="flex flex-col">
                 <span className="font-bold text-lg">{user?.fullName}</span>
-                <span className="text-sm text-slate-500">@{user?.username}</span>
+                <span className="text-sm text-slate-500">
+                  @{user?.username}
+                </span>
                 <span className="text-sm my-1">{user?.bio}</span>
               </div>
 
@@ -174,7 +187,7 @@ const ProfilePage = () => {
                   <div className="flex gap-1 items-center">
                     <FaLink className="w-3 h-3 text-green-700" />
                     <a
-                      href="https://youtube.com/@ugyenofficial"
+                      href="https://youtube.com/"
                       target="_blank"
                       rel="noreferrer"
                       className="text-sm text-green-700 hover:underline"
@@ -185,17 +198,23 @@ const ProfilePage = () => {
                 )}
                 <div className="flex gap-2 items-center">
                   <IoCalendarOutline className="w-4 h-4 text-slate-500" />
-                  <span className="text-sm text-slate-500">{memberSinceDate}</span>
+                  <span className="text-sm text-slate-500">
+                    {memberSinceDate}
+                  </span>
                 </div>
               </div>
-              
+
               <div className="flex gap-2">
                 <div className="flex gap-1 items-center">
-                  <span className="font-bold text-xs">{user?.following.length}</span>
+                  <span className="font-bold text-xs">
+                    {user?.following.length}
+                  </span>
                   <span className="text-slate-500 text-xs">Following</span>
                 </div>
                 <div className="flex gap-1 items-center">
-                  <span className="font-bold text-xs">{user?.followers.length}</span>
+                  <span className="font-bold text-xs">
+                    {user?.followers.length}
+                  </span>
                   <span className="text-slate-500 text-xs">Followers</span>
                 </div>
               </div>
