@@ -1,4 +1,4 @@
-const contractAddress = "0xBDd24cBe58F9d340C49C650Fcc433FDDb8435255";
+const contractAddress = "0x1E6D1D33E5144557d83a211FE86ed6bf9A4ed200";
 const contractAbi = [
   {
     anonymous: false,
@@ -57,7 +57,7 @@ const contractAbi = [
     ],
     name: "addToBlockchain",
     outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "payable",
     type: "function",
   },
   {
@@ -114,5 +114,4 @@ const contractAbi = [
     type: "function",
   },
 ];
-
 export { contractAddress, contractAbi };

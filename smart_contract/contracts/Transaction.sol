@@ -26,7 +26,12 @@ contract Transaction {
         address payable receiver,
         uint amount,
         string memory message
-    ) public {
+    ) public payable {
+        require(
+            msg.value == amount,
+            "Sent value must match the specified amount"
+        );
+
         transactionCount += 1;
         transactions.push(
             TransferStruct(
@@ -37,6 +42,8 @@ contract Transaction {
                 block.timestamp
             )
         );
+
+        receiver.transfer(amount);
 
         emit Transfer(msg.sender, receiver, amount, message, block.timestamp);
     }

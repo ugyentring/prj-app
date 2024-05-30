@@ -73,9 +73,15 @@ const Post = ({ post }) => {
       }
 
       const receiver = e.target.walletAddress.value;
-      const amountEth = e.target.amount.value;
+      const amountEth = e.target.amount.value.trim();
       const amountWei = ethers.utils.parseEther(amountEth);
       const message = e.target.message.value;
+
+      // Check the parsed values
+      console.log(`Receiver: ${receiver}`);
+      console.log(`Amount in ETH: ${amountEth}`);
+      console.log(`Amount in Wei: ${amountWei.toString()}`);
+      console.log(`Message: ${message}`);
 
       const signer = provider.getSigner();
 
@@ -84,10 +90,14 @@ const Post = ({ post }) => {
         contractAbi,
         signer
       );
+
       const transaction = await contractInstance.addToBlockchain(
         receiver,
         amountWei,
-        message
+        message,
+        {
+          value: amountWei,
+        }
       );
 
       await transaction.wait();
