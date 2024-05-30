@@ -2,8 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { contractAbi, contractAddress } from "../../constants/constant.js";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-const Models = () => {
+const Models = ({ isOpen, onClose }) => {
   const [provider, setProvider] = useState(null);
   const [account, setAccount] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -58,7 +60,6 @@ const Models = () => {
     }
   }
 
-  //connect metamask wallet
   async function connectToMetamask() {
     if (window.ethereum) {
       try {
@@ -78,7 +79,6 @@ const Models = () => {
     }
   }
 
-  // Handling account change
   function handleAccountsChanged(accounts) {
     if (accounts.length > 0 && account !== accounts[0]) {
       setAccount(accounts[0]);
@@ -89,51 +89,66 @@ const Models = () => {
   }
 
   return (
-    <div className="mt-20 flex flex-col gap-5 text-black max-w-3xl mx-auto">
-      <div className="bg-indigo-600 rounded-xl px-20 py-10 flex flex-col gap-5 items-center mt-20">
-        <form className="flex flex-col w-full">
-          <input
-            type="text"
-            id="walletAddress"
-            placeholder="Enter the wallet address"
-            required
-            className="mb-5 p-3 border rounded-md outline-none"
-          />
-          <input
-            type="number"
-            id="amount"
-            placeholder="Amount in wei"
-            required
-            className="mb-5 p-3 border rounded-md outline-none"
-          />
-          <input
-            type="text"
-            id="message"
-            placeholder="Enter your message"
-            required
-            className="mb-5 p-3 border rounded-md outline-none"
-          />
-        </form>
-      </div>
-      <div className="flex flex-col justify-center items-center">
-        {!isConnected && (
-          <button
-            onClick={connectToMetamask}
-            className="bg-blue-800 rounded-md py-2 px-4 text-white text-base mb-5"
-          >
-            Connect Wallet
+    <dialog id="send_eth_modal" className="modal" open={isOpen}>
+      <div className="modal-box bg-white border rounded-md border-gray-300 shadow-md p-6">
+        <div className="flex justify-end">
+          <button className="btn btn-clear" onClick={onClose}>
+            <FontAwesomeIcon icon={faTimes} />
           </button>
-        )}
-        {isConnected && (
-          <button
-            onClick={addToBlockchain}
-            className="bg-green-700 rounded-md py-2 px-4 text-white"
-          >
-            Send Amount
-          </button>
+        </div>
+        {!isConnected ? (
+          <>
+            <h3 className="font-bold text-lg mb-4">Connect Wallet</h3>
+            <button
+              onClick={connectToMetamask}
+              className="bg-blue-800 rounded-md py-2 px-4 text-white text-base mb-5"
+            >
+              Connect Wallet
+            </button>
+          </>
+        ) : (
+          <>
+            <h3 className="font-bold text-lg mb-4">Send ETH</h3>
+            <form
+              className="flex flex-col gap-4"
+              onSubmit={(e) => {
+                e.preventDefault();
+                addToBlockchain();
+              }}
+            >
+              <input
+                type="text"
+                id="walletAddress"
+                placeholder="Enter the wallet address"
+                required
+                className="mb-5 p-3 border rounded-md outline-none"
+              />
+              <input
+                type="number"
+                id="amount"
+                placeholder="Amount in ETH"
+                required
+                className="mb-5 p-3 border rounded-md outline-none"
+              />
+              <input
+                type="text"
+                id="message"
+                placeholder="Enter your message"
+                required
+                className="mb-5 p-3 border rounded-md outline-none"
+              />
+              <button
+                type="submit"
+                className="bg-green-700 rounded-md py-2 px-4 text-white"
+              >
+                Send
+              </button>
+            </form>
+          </>
         )}
       </div>
-    </div>
+      <form method="dialog" className="modal-backdrop"></form>
+    </dialog>
   );
 };
 

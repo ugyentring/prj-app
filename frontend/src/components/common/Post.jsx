@@ -1,21 +1,103 @@
-import { BiComment } from "react-icons/bi";
-import { BiUpvote } from "react-icons/bi";
+import { BiComment, BiUpvote } from "react-icons/bi";
 import { CiGift } from "react-icons/ci";
 import { FaTrash } from "react-icons/fa";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-
+import { ethers } from "ethers";
 import LoadingSpinner from "./LoadingSpinner";
 import { formatPostDate } from "../../utils/date";
+import { contractAbi, contractAddress } from "../../constants/constant.js";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 const Post = ({ post }) => {
   const [comment, setComment] = useState("");
-  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
-  const queryClient = useQueryClient();
-
   const [copySuccess, setCopySuccess] = useState("");
+  const [provider, setProvider] = useState(null);
+  const [account, setAccount] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isAwardDialogOpen, setIsAwardDialogOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", handleAccountsChanged);
+    }
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener(
+          "accountsChanged",
+          handleAccountsChanged
+        );
+      }
+    };
+  }, []);
+
+  async function connectToMetamask() {
+    if (window.ethereum) {
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        setProvider(provider);
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+        const address = await signer.getAddress();
+        setAccount(address);
+        setIsConnected(true);
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      console.error("Metamask is not detected in the browser");
+    }
+  }
+
+  function handleAccountsChanged(accounts) {
+    if (accounts.length > 0 && account !== accounts[0]) {
+      setAccount(accounts[0]);
+    } else {
+      setIsConnected(false);
+      setAccount(null);
+    }
+  }
+
+  async function addToBlockchain(e) {
+    e.preventDefault();
+    try {
+      if (!provider) {
+        console.error("Ethereum provider is not initialized");
+        return;
+      }
+
+      const receiver = e.target.walletAddress.value;
+      const amountEth = e.target.amount.value;
+      const amountWei = ethers.utils.parseEther(amountEth);
+      const message = e.target.message.value;
+
+      const signer = provider.getSigner();
+
+      const contractInstance = new ethers.Contract(
+        contractAddress,
+        contractAbi,
+        signer
+      );
+      const transaction = await contractInstance.addToBlockchain(
+        receiver,
+        amountWei,
+        message
+      );
+
+      await transaction.wait();
+      navigate("/");
+
+      console.log("Transaction successful!");
+    } catch (error) {
+      console.error("Error executing addToBlockchain:", error);
+    }
+  }
 
   const copyToClipBoard = async (walletAddress) => {
     try {
@@ -28,18 +110,14 @@ const Post = ({ post }) => {
 
   const { mutate: deletePost, isPending: isDeleting } = useMutation({
     mutationFn: async () => {
-      try {
-        const res = await fetch(`/api/posts/${post._id}`, {
-          method: "DELETE",
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || "Something went wrong");
-        }
-        return data;
-      } catch (error) {
-        throw new Error(error);
+      const res = await fetch(`/api/posts/${post._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Something went wrong");
       }
+      return data;
     },
     onSuccess: () => {
       toast.success("Post deleted successfully");
@@ -49,18 +127,14 @@ const Post = ({ post }) => {
 
   const { mutate: likePost, isPending: isLiking } = useMutation({
     mutationFn: async () => {
-      try {
-        const res = await fetch(`/api/posts/like/${post._id}`, {
-          method: "POST",
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || "Something went wrong");
-        }
-        return data;
-      } catch (error) {
-        throw new Error(error.message);
+      const res = await fetch(`/api/posts/like/${post._id}`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Something went wrong");
       }
+      return data;
     },
     onSuccess: (updatedLikes) => {
       queryClient.setQueryData(["posts"], (oldData) => {
@@ -79,23 +153,19 @@ const Post = ({ post }) => {
 
   const { mutate: commentPost, isPending: isCommenting } = useMutation({
     mutationFn: async () => {
-      try {
-        const res = await fetch(`/api/posts/comment/${post._id}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ text: comment }),
-        });
+      const res = await fetch(`/api/posts/comment/${post._id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: comment }),
+      });
 
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || "Something went wrong");
-        }
-        return data;
-      } catch (error) {
-        throw new Error(error);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Something went wrong");
       }
+      return data;
     },
     onSuccess: () => {
       toast.success("You commented on the post");
@@ -109,18 +179,14 @@ const Post = ({ post }) => {
 
   const { mutate: deleteComment, isPending: isDeletingComment } = useMutation({
     mutationFn: async (commentId) => {
-      try {
-        const res = await fetch(`/api/posts/comment/${post._id}/${commentId}`, {
-          method: "DELETE",
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || "Something went wrong");
-        }
-        return data;
-      } catch (error) {
-        throw new Error(error);
+      const res = await fetch(`/api/posts/comment/${post._id}/${commentId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Something went wrong");
       }
+      return data;
     },
     onSuccess: () => {
       toast.success("Comment deleted successfully");
@@ -165,7 +231,10 @@ const Post = ({ post }) => {
       </div>
       <div className="flex flex-col flex-1">
         <div className="flex gap-2 items-center">
-          <Link to={`/profile/${postOwner.username}`} className="font-bold text-lg">
+          <Link
+            to={`/profile/${postOwner.username}`}
+            className="font-bold text-lg"
+          >
             {postOwner.fullName}
           </Link>
           <span className="text-gray-500 dark:text-gray-400 flex gap-1 text-sm">
@@ -210,100 +279,143 @@ const Post = ({ post }) => {
         <div className="flex justify-between mt-3">
           <div className="flex gap-4 items-center">
             <div
-              className="flex gap-1 items-center cursor-pointer group"
-              onClick={() =>
-                document.getElementById("comments_modal" + post._id).showModal()
-              }
-            >
-              <BiComment className="w-5 h-5 text-gray-500 group-hover:text-blue-500" />
-              <span className="text-sm text-gray-500 group-hover:text-blue-500">
-                {post.comments.length}
-              </span>
-              <span className="text-xs text-gray-500">Comment</span>
-            </div>
-            <dialog
-              id={`comments_modal${post._id}`}
-              className="modal border-none outline-none"
-            >
-              <div className="modal-box bg-white border rounded-md border-gray-300 shadow-md p-6">
-                <h3 className="font-bold text-lg mb-4">Comments</h3>
-                <div className="flex flex-col gap-3 max-h-60 overflow-auto">
-                  {post.comments.length === 0 && (
-                    <p className="text-sm text-gray-500">
-                      No comments yet 🤔 Be the first one 😉
-                    </p>
-                  )}
-                  {post.comments.map((comment) => (
-                    <div key={comment._id} className="flex gap-2 items-start">
-                      <div className="avatar">
-                        <div className="w-8 rounded-full">
-                          <img
-                            src={
-                              comment.user.profileImage ||
-                              "/avatar-placeholder.png"
-                            }
-                          />
-                        </div>
-                      </div>
-                      <div className="flex flex-col flex-1">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1">
-                            <span className="font-bold">
-                              {comment.user.fullName}
-                            </span>
-                            <span className="text-gray-500 text-sm">
-                              @{comment.user.username}
-                            </span>
-                          </div>
-                          {authUser._id === comment.user._id && (
-                            <FaTrash
-                              className="cursor-pointer hover:text-red-500"
-                              onClick={() => handleDeleteComment(comment._id)}
-                            />
-                          )}
-                        </div>
-                        <div className="text-sm text-gray-700 dark:text-gray-300">{comment.text}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <form
-                  className="flex gap-2 items-center mt-4 border-t border-gray-600 pt-2"
-                  onSubmit={handlePostComment}
-                >
-                  <textarea
-                    className="textarea w-full p-2 rounded text-md resize-none border focus:outline-none border-gray-300 dark:border-gray-700"
-                    placeholder="Add a comment..."
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                  />
-                  <button className="btn btn-success rounded-full btn-sm text-white px-4">
-                    {isCommenting ? <LoadingSpinner size="md" /> : "Post"}
-                  </button>
-                </form>
-              </div>
-              <form method="dialog" className="modal-backdrop">
-                <button className="outline-none">close</button>
-              </form>
-            </dialog>
-            <div
-              className="flex gap-1 items-center group cursor-pointer"
+              className="flex gap-2 items-center cursor-pointer text-gray-500 dark:text-gray-400"
               onClick={handleLikePost}
             >
-              <BiUpvote className="w-5 h-5 cursor-pointer text-gray-500 group-hover:text-darkgreen group-hover:text-darkgreen" />
-              <span className={`text-sm group-hover:text-darkgreen ${isLiked ? "text-darkgreen" : "text-gray-500"}`}>
-              {post.likes.length}
-              </span>
-              <span className="text-xs text-gray-500">Vote</span>
+              <BiUpvote className={isLiked ? "text-blue-500" : ""} />
+              <span>{post.likes.length}</span>
+            </div>
+            <div className="flex gap-2 items-center text-gray-500 dark:text-gray-400">
+              <BiComment />
+              <span>{post.comments.length}</span>
             </div>
           </div>
-          <div className="flex justify-end gap-2 items-center">
-            <Link to="/model">
-              <CiGift className="w-5 h-5 text-gray-500 cursor-pointer" />
-            </Link>
-            <span className="text-xs text-gray-500">Award</span>
+          <div className="text-gray-500 dark:text-gray-400 cursor-pointer flex justify-center items-center mr-4 gap-1">
+            <span>Award </span>
+            <CiGift onClick={() => setIsAwardDialogOpen(true)} />
           </div>
         </div>
+        <form className="flex gap-2 mt-3" onSubmit={handlePostComment}>
+          <input
+            type="text"
+            className="flex-1 border border-gray-300 dark:border-gray-700 p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
+            placeholder="Add a comment..."
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            required
+          />
+          {!isCommenting ? (
+            <button
+              type="submit"
+              className="px-4 py-2 bg-green-700 text-white rounded hover:bg-blue-600"
+            >
+              Comment
+            </button>
+          ) : (
+            <LoadingSpinner size="sm" />
+          )}
+        </form>
+        <div className="mt-3">
+          {post.comments.map((comment) => (
+            <div
+              key={comment._id}
+              className="flex justify-between items-start bg-gray-100 dark:bg-gray-800 p-2 rounded mb-2"
+            >
+              <div className="flex gap-2">
+                <img
+                  src={comment.user.profileImage || "/avatar-placeholder.png"}
+                  className="w-8 h-8 rounded-full"
+                />
+                <div>
+                  <Link
+                    to={`/profile/${comment.user.username}`}
+                    className="font-semibold text-sm text-gray-900 dark:text-gray-100"
+                  >
+                    {comment.user.fullName}
+                  </Link>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {comment.text}
+                  </p>
+                </div>
+              </div>
+              {authUser._id === comment.user._id && (
+                <button
+                  onClick={() => handleDeleteComment(comment._id)}
+                  className="text-sm text-red-500 hover:text-red-600"
+                >
+                  {!isDeletingComment ? "Delete" : <LoadingSpinner size="sm" />}
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+        {isAwardDialogOpen && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg max-w-md w-full relative">
+              <button
+                className="absolute top-2 right-2 text-gray-500 dark:text-gray-400"
+                onClick={() => setIsAwardDialogOpen(false)}
+              >
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+              <h2 className="text-2xl font-bold mb-4">Send Award</h2>
+              <div>
+                {!isConnected ? (
+                  <button
+                    className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                    onClick={connectToMetamask}
+                  >
+                    Connect Wallet
+                  </button>
+                ) : (
+                  <form onSubmit={addToBlockchain}>
+                    <div className="mb-4">
+                      <label className="block text-gray-700 dark:text-gray-300 mb-2">
+                        Wallet Address
+                      </label>
+                      <input
+                        type="text"
+                        name="walletAddress"
+                        id="walletAddress"
+                        className="w-full border border-gray-300 dark:border-gray-700 p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
+                        required
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700 dark:text-gray-300 mb-2">
+                        Amount (ETH)
+                      </label>
+                      <input
+                        type="number"
+                        name="amount"
+                        id="amount"
+                        step="0.01"
+                        className="w-full border border-gray-300 dark:border-gray-700 p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
+                        required
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700 dark:text-gray-300 mb-2">
+                        Message
+                      </label>
+                      <textarea
+                        name="message"
+                        id="message"
+                        className="w-full border border-gray-300 dark:border-gray-700 p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="w-full bg-green-700 text-white p-2 rounded hover:bg-blue-600"
+                    >
+                      Send
+                    </button>
+                  </form>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
