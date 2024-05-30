@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "./components/common/LoadingSpinner";
 import Models from "./components/common/Models";
 import Transaction from "./components/common/Transaction";
+import ForgotPassword from "../src/pages/auth/forgotPassword/ForgotPassword";
 import { useState } from "react";
 
 const App = () => {
@@ -70,6 +71,10 @@ const App = () => {
           <Route
             path="/transaction"
             element={authUser ? <Transaction /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/forgot-password"
+            element={authUser ? <ForgotPassword /> : <Navigate to="/login" />}
           />
           {/* Remove the /model route */}
         </Routes>
