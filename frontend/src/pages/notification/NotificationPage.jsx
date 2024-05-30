@@ -90,7 +90,7 @@ const NotificationPage = () => {
               {notification.type === "follow" ? (
                 <FaRegUser className="w-8 h-8 text-green-700 mr-4" />
               ) : (
-                <BiUpvote className="w-8 h-8 text-red-500 mr-4" />
+                <BiUpvote className="w-8 h-8 text-green-300 mr-4" />
               )}
               <div className="flex flex-col">
                 <Link
