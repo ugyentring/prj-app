@@ -62,7 +62,7 @@ const NotificationPage = () => {
             <li>
               <button
                 onClick={deleteNotifications}
-                className="text-white hover:text-gray-300"
+                className="text-black hover:text-gray-900"
               >
                 Delete all notifications
               </button>
