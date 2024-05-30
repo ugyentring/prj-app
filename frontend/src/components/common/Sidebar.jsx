@@ -1,6 +1,7 @@
+import React from 'react';
 import Logo from "../logo/Logo";
 
-import { RiHome4Line } from "react-icons/ri";
+import { RiHome4Line, RiExchangeLine } from "react-icons/ri";
 import { GrNotification } from "react-icons/gr";
 import { FaRegUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -38,7 +39,7 @@ const Sidebar = () => {
 
   return (
     <div className="md:flex-[2_2_0] w-18 max-w-52">
-      <div className="sticky top-0 left-0 h-screen flex flex-col border-r border-gray-700 w-20 md:w-full">
+      <div className="sticky top-0 left-0 h-screen flex flex-col w-20 md:w-full">
         <Link to="/" className="flex justify-center md:justify-start">
           <Logo />
         </Link>
@@ -63,6 +64,15 @@ const Sidebar = () => {
           </li>
           <li className="flex justify-center md:justify-start">
             <Link
+              to="/transactions"
+              className="flex gap-3 items-center menu-item hover:bg-green-700 hover:text-white transition-all rounded-full duration-300 py-2 pl-2 pr-4 max-w-fit cursor-pointer"
+            >
+              <RiExchangeLine className="w-6 h-6" />
+              <span className="text-lg hidden md:block">Transactions</span>
+            </Link>
+          </li>
+          <li className="flex justify-center md:justify-start">
+            <Link
               to={`/profile/${authUser?.username}`}
               className="flex gap-3 items-center menu-item hover:bg-green-700 hover:text-white transition-all rounded-full duration-300 py-2 pl-2 pr-4 max-w-fit cursor-pointer"
             >
@@ -72,38 +82,40 @@ const Sidebar = () => {
           </li>
         </ul>
         {authUser && (
-          <Link
-            to={`/profile/${authUser.username}`}
-            className="mt-auto mb-10 flex gap-2 items-start transition-all duration-300 hover:bg-green-700 py-2 px-4 rounded-full"
-          >
-            <div className="avatar hidden md:inline-flex">
-              <div className="w-8 rounded-full">
-                <img
-                  src={authUser?.profileImage || "/avatar-placeholder.png"}
-                />
+          <div className="mt-auto mb-10 flex gap-2 items-start flex-col transition-all duration-300">
+            <Link
+              to={`/profile/${authUser.username}`}
+              className="flex gap-2 items-center py-2 px-4 rounded-full"
+            >
+              <div className="avatar hidden md:inline-flex">
+                <div className="w-8 rounded-full">
+                  <img
+                    src={authUser?.profileImage || "/avatar-placeholder.png"}
+                  />
+                </div>
               </div>
-            </div>
-            <div className="flex justify-between flex-1">
-              <div className="hidden md:block">
-                <p className="text-black font-bold text-sm w-20 truncate hover:text-white">
+              <div className="flex flex-col">
+                <p className="text-black font-bold text-sm w-20 truncate">
                   {authUser?.fullName}
                 </p>
-                <p className="text-slate-500 text-sm hover:text-white">
-                  @{authUser?.username}
-                </p>
+                <p className="text-slate-500 text-sm">@{authUser?.username}</p>
               </div>
-              <BiLogOut
-                className="w-5 h-5 cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  logout();
-                }}
-              />
+            </Link>
+            <div
+              className="flex items-center gap-2 p-2 rounded-full cursor-pointer hover:bg-red-500 hover:text-white transition-all duration-300"
+              onClick={(e) => {
+                e.preventDefault();
+                logout();
+              }}
+            >
+              <BiLogOut className="w-5 h-5" />
+              <span className="text-sm font-semibold">Logout</span>
             </div>
-          </Link>
+          </div>
         )}
       </div>
     </div>
   );
 };
+
 export default Sidebar;
