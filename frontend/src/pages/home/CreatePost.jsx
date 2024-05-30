@@ -65,35 +65,30 @@ const CreatePost = () => {
   };
 
   return (
-    <div className="flex p-4 items-start gap-4 border-b border-gray-700">
+    <div className="flex p-4 items-start gap-4 border-b border-gray-300 shadow-md rounded-md">
       <div className="avatar">
-        <div className="w-8 rounded-full">
-          <img src={authUser.profileImage || "/avatar-placeholder.png"} />
+        <div className="w-8 h-8 rounded-full overflow-hidden">
+          <img src={authUser.profileImage || "/avatar-placeholder.png"} alt="Profile" />
         </div>
       </div>
       <form className="flex flex-col gap-2 w-full" onSubmit={handleSubmit}>
         <textarea
-          className="textarea w-full p-0 text-lg resize-none border-none focus:outline-none  border-gray-800"
-          placeholder="What's on your mind?
-          "
+          className="textarea w-full p-2 text-lg resize-none border border-gray-300 focus:outline-none rounded-md"
+          placeholder="What's on your mind?"
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
-        {/* Line to visually separate the textarea and input field */}
-        <hr className="border-t border-gray-700 my-2" />
-        {/* Input field for wallet address */}
         <input
           type="text"
-          className="input w-full p-0 text-lg border-none focus:outline-none  border-gray-800"
+          className="input w-full p-2 text-lg border border-gray-300 focus:outline-none rounded-md"
           placeholder="Enter your metamask wallet address"
           value={walletAddress}
           onChange={(e) => setWalletAddress(e.target.value)}
         />
-        {/* End of wallet address input */}
         {img && (
           <div className="relative w-72 mx-auto">
             <IoCloseSharp
-              className="absolute top-0 right-0 text-white bg-gray-800 rounded-full w-5 h-5 cursor-pointer"
+              className="absolute top-2 right-2 text-gray-600 bg-white rounded-full w-6 h-6 cursor-pointer"
               onClick={() => {
                 setImg(null);
                 imgRef.current.value = null;
@@ -101,12 +96,13 @@ const CreatePost = () => {
             />
             <img
               src={img}
-              className="w-full mx-auto h-72 object-contain rounded"
+              className="w-full mx-auto h-52 object-cover rounded-md"
+              alt="Uploaded"
             />
           </div>
         )}
 
-        <div className="flex justify-between border-t py-2 border-t-gray-700">
+        <div className="flex justify-between items-center border-t py-2 border-t-gray-300">
           <div className="flex gap-1 items-center">
             <IoImageOutline
               className="w-6 h-6 cursor-pointer text-green-700"
@@ -121,7 +117,7 @@ const CreatePost = () => {
             ref={imgRef}
             onChange={handleImgChange}
           />
-          <button className="btn bg-green-700 rounded-full btn-sm text-white px-4 hover:bg-gray-500">
+          <button className="btn bg-green-700 rounded-full btn-sm text-white px-4 hover:bg-green-600 focus:outline-none">
             {isPending ? "Posting..." : "Post"}
           </button>
         </div>

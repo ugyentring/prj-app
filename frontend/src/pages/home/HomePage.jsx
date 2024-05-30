@@ -6,40 +6,47 @@ import Posts from "../../components/common/Posts";
 const HomePage = () => {
   const [feedType, setFeedType] = useState("forYou");
 
+  const handleFeedTypeChange = (type) => {
+    setFeedType(type);
+  };
+
   return (
     <>
-      <div className="flex-[4_4_0] mr-auto border-r border-gray-700 min-h-screen">
+      <div className="flex-[4_4_0] mr-auto min-h-screen bg-gray-100">
         {/* Header */}
-        <div className="flex w-full border-b border-gray-700">
+        <div className="flex w-full">
           <div
-            className={
-              "flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 cursor-pointer relative"
-            }
-            onClick={() => setFeedType("forYou")}
+            className={`flex justify-center flex-1 p-3 cursor-pointer relative transition duration-300 ${
+              feedType === "forYou" ? "text-white bg-green-700" : "text-gray-700"
+            }`}
+            onClick={() => handleFeedTypeChange("forYou")}
+            style={{ borderBottom: feedType === "forYou" ? "none" : "1px solid transparent" }}
           >
             For you
-            {feedType === "forYou" && (
-              <div className="absolute bottom-0 w-10  h-1 rounded-full bg-primary"></div>
-            )}
           </div>
           <div
-            className="flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 cursor-pointer relative"
-            onClick={() => setFeedType("following")}
+            className={`flex justify-center flex-1 p-3 cursor-pointer relative transition duration-300 ${
+              feedType === "following" ? "text-white bg-green-700" : "text-gray-700"
+            }`}
+            onClick={() => handleFeedTypeChange("following")}
+            style={{ borderBottom: feedType === "following" ? "none" : "1px solid transparent" }}
           >
             Following
-            {feedType === "following" && (
-              <div className="absolute bottom-0 w-10  h-1 rounded-full bg-primary"></div>
-            )}
           </div>
         </div>
 
-        {/*  CREATE POST INPUT */}
-        <CreatePost />
+        {/* CREATE POST INPUT */}
+        <div className="bg-white p-4">
+          <CreatePost />
+        </div>
 
         {/* POSTS */}
-        <Posts feedType={feedType} />
+        <div className="bg-white">
+          <Posts feedType={feedType} />
+        </div>
       </div>
     </>
   );
 };
+
 export default HomePage;
