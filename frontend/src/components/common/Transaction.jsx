@@ -30,17 +30,30 @@ const Transaction = () => {
   }, []);
 
   return (
-    <div>
-      <h2>Transactions</h2>
-      <ul>
+    <div className="container mx-auto">
+      <h2 className="font-bold text-2xl flex justify-between items-center p-4 border-b border-gray-700 bg-gradient-to-r from-green-700 to-green-900 text-white">Transactions</h2>
+      <ul className="space-y-4">
         {transactions.map((transaction, index) => (
-          <li key={index}>
-            <p>From: {transaction.sender}</p>
-            <p>To: {transaction.reciever}</p>
-            <p>Amount: {ethers.utils.formatEther(transaction.amount)} ETH</p>
-            <p>Message: {transaction.message}</p>
-            <p>
-              Timestamp:{" "}
+          <li
+            key={index}
+            className="p-4 border rounded-lg shadow-md bg-white"
+          >
+            <p className="text-gray-700">
+              <span className="font-bold">From:</span> {transaction.sender}
+            </p>
+            <p className="text-gray-700">
+              <span className="font-bold">To:</span> {transaction.reciever}
+            </p>
+            <p className="text-gray-700">
+              <span className="font-bold">Amount:</span>{" "}
+              {ethers.utils.formatEther(transaction.amount)} ETH
+            </p>
+            <p className="text-gray-700">
+              <span className="font-bold">Message:</span>{" "}
+              {transaction.message}
+            </p>
+            <p className="text-gray-700">
+              <span className="font-bold">Timestamp:</span>{" "}
               {new Date(transaction.timestamp * 1000).toLocaleString()}
             </p>
           </li>
