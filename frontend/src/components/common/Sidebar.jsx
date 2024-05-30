@@ -64,7 +64,7 @@ const Sidebar = () => {
           </li>
           <li className="flex justify-center md:justify-start">
             <Link
-              to="/transactions"
+              to="/transaction"
               className="flex gap-3 items-center menu-item hover:bg-green-700 hover:text-white transition-all rounded-full duration-300 py-2 pl-2 pr-4 max-w-fit cursor-pointer"
             >
               <RiExchangeLine className="w-6 h-6" />
