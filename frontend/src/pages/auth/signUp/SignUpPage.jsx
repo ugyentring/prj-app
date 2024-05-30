@@ -1,10 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
-import { MdOutlineMail } from "react-icons/md";
-import { FaUser } from "react-icons/fa";
-import { MdPassword } from "react-icons/md";
-import { MdDriveFileRenameOutline } from "react-icons/md";
+import { MdOutlineMail, MdPassword, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import toast from "react-hot-toast";
 
 //react query imports
@@ -16,7 +13,11 @@ const SignUpPage = () => {
     username: "",
     fullName: "",
     password: "",
+    confirmPassword: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State to toggle confirm password visibility
 
   const { mutate, isError, isPending, error } = useMutation({
     mutationFn: async ({ email, username, fullName, password }) => {
@@ -45,11 +46,51 @@ const SignUpPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Check if all fields are filled
+    if (
+      !formData.email ||
+      !formData.username ||
+      !formData.fullName ||
+      !formData.password ||
+      !formData.confirmPassword
+    ) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    // Password validation
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    if (!isPasswordValid(formData.password)) {
+      toast.error(
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and be at least 8 characters long."
+      );
+      return;
+    }
+
     mutate(formData);
   };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevState) => !prevState);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword((prevState) => !prevState);
+  };
+
+  // Password validation function
+  const isPasswordValid = (password) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    return passwordRegex.test(password);
   };
 
   return (
@@ -73,36 +114,34 @@ const SignUpPage = () => {
               value={formData.email}
             />
           </label>
-          <div className="flex gap-4 flex-wrap">
-            <label className="input input-bordered rounded flex items-center gap-2 flex-1">
-              <FaUser />
-              <input
-                type="text"
-                className="grow "
-                placeholder="Username"
-                name="username"
-                autoComplete="off"
-                onChange={handleInputChange}
-                value={formData.username}
-              />
-            </label>
-            <label className="input input-bordered rounded flex items-center gap-2 flex-1">
-              <MdDriveFileRenameOutline />
-              <input
-                type="text"
-                className="grow"
-                placeholder="Full Name"
-                name="fullName"
-                autoComplete="off"
-                onChange={handleInputChange}
-                value={formData.fullName}
-              />
-            </label>
-          </div>
           <label className="input input-bordered rounded flex items-center gap-2">
             <MdPassword />
             <input
-              type="password"
+              type="text"
+              className="grow"
+              placeholder="Username"
+              name="username"
+              autoComplete="off"
+              onChange={handleInputChange}
+              value={formData.username}
+            />
+          </label>
+          <label className="input input-bordered rounded flex items-center gap-2">
+            <MdPassword />
+            <input
+              type="text"
+              className="grow"
+              placeholder="Full Name"
+              name="fullName"
+              autoComplete="off"
+              onChange={handleInputChange}
+              value={formData.fullName}
+            />
+          </label>
+          <label className="input input-bordered rounded flex items-center gap-2">
+            <MdPassword />
+            <input
+              type={showPassword ? "text" : "password"} // Use conditional rendering based on showPassword state
               className="grow"
               placeholder="Password"
               name="password"
@@ -110,6 +149,28 @@ const SignUpPage = () => {
               onChange={handleInputChange}
               value={formData.password}
             />
+            {showPassword ? (
+              <MdVisibilityOff onClick={togglePasswordVisibility} />
+            ) : (
+              <MdVisibility onClick={togglePasswordVisibility} />
+            )}
+          </label>
+          <label className="input input-bordered rounded flex items-center gap-2">
+            <MdPassword />
+            <input
+              type={showConfirmPassword ? "text" : "password"} // Use conditional rendering based on showConfirmPassword state
+              className="grow"
+              placeholder="Confirm Password"
+              name="confirmPassword"
+              autoComplete="off"
+              onChange={handleInputChange}
+              value={formData.confirmPassword}
+            />
+            {showConfirmPassword ? (
+              <MdVisibilityOff onClick={toggleConfirmPasswordVisibility} />
+            ) : (
+              <MdVisibility onClick={toggleConfirmPasswordVisibility} />
+            )}
           </label>
           <button className="btn rounded-full bg-green-700 text-white">
             {isPending ? "Loading..." : "Sign Up"}
@@ -117,15 +178,17 @@ const SignUpPage = () => {
           {isError && <p className="text-red-500">{error.message}</p>}
         </form>
         <div className="flex flex-col lg:w-2/3 gap-2 mt-4">
-          <p className="text-black text-lg">Already have an account?</p>
-          <Link to="/login">
-            <button className="btn rounded-full btn-primary text-white btn-outline w-full">
+          <p className="text-black text-lg">
+            Already have an account?{" "}
+            <Link to="/login" className="text-blue-600">
               Sign in
-            </button>
-          </Link>
+            </Link>
+          </p>
         </div>
       </div>
     </div>
   );
 };
+
 export default SignUpPage;
+
