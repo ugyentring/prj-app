@@ -224,7 +224,8 @@ const Post = ({ post }) => {
       <div className="avatar">
         <Link
           to={`/profile/${postOwner.username}`}
-          className="w-10 h-10 rounded-full overflow-hidden"        >
+          className="w-10 h-10 rounded-full overflow-hidden"
+        >
           <img src={postOwner.profileImage || "/avatar-placeholder.png"} />
         </Link>
       </div>
@@ -404,7 +405,7 @@ const Post = ({ post }) => {
                         id="message"
                         className="w-full border border-gray-300 dark:border-gray-700 p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
                       />
-                                       </div>
+                    </div>
                     <button
                       type="submit"
                       className="w-full bg-green-700 text-white p-2 rounded hover:bg-success"
@@ -423,5 +424,3 @@ const Post = ({ post }) => {
 };
 
 export default Post;
-
-
