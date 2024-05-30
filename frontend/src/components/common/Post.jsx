@@ -282,12 +282,14 @@ const Post = ({ post }) => {
               className="flex gap-2 items-center cursor-pointer text-gray-500 dark:text-gray-400"
               onClick={handleLikePost}
             >
-              <BiUpvote className={isLiked ? "text-blue-500" : ""} />
+              <BiUpvote className={isLiked ? "text-green-700" : ""} />
               <span>{post.likes.length}</span>
+              <span>Vote</span>
             </div>
             <div className="flex gap-2 items-center text-gray-500 dark:text-gray-400">
               <BiComment />
               <span>{post.comments.length}</span>
+              <span>Comment</span>
             </div>
           </div>
           <div className="text-gray-500 dark:text-gray-400 cursor-pointer flex justify-center items-center mr-4 gap-1">
@@ -307,7 +309,7 @@ const Post = ({ post }) => {
           {!isCommenting ? (
             <button
               type="submit"
-              className="px-4 py-2 bg-green-700 text-white rounded hover:bg-blue-600"
+              className="px-4 py-2 bg-green-700 text-white rounded hover:bg-success"
             >
               Comment
             </button>
@@ -362,7 +364,7 @@ const Post = ({ post }) => {
               <div>
                 {!isConnected ? (
                   <button
-                    className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                    className="w-full bg-green-700 text-white p-2 rounded hover:success"
                     onClick={connectToMetamask}
                   >
                     Connect Wallet
@@ -406,7 +408,7 @@ const Post = ({ post }) => {
                     </div>
                     <button
                       type="submit"
-                      className="w-full bg-green-700 text-white p-2 rounded hover:bg-blue-600"
+                      className="w-full bg-green-700 text-white p-2 rounded hover:bg-success"
                     >
                       Send
                     </button>

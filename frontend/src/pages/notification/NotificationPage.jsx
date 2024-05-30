@@ -42,7 +42,7 @@ const NotificationPage = () => {
       }
     },
     onSuccess: () => {
-      toast.success("Notifications delete successfully");
+      toast.success("Notifications deleted successfully");
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
     onError: (error) => {
@@ -51,66 +51,72 @@ const NotificationPage = () => {
   });
 
   return (
-    <>
-      <div className="flex-[4_4_0] border-l border-r border-gray-700 min-h-screen">
-        <div className="flex justify-between items-center p-4 border-b border-gray-700">
-          <p className="font-bold">Notifications</p>
-          <div className="dropdown ">
-            <div tabIndex={0} role="button" className="m-1">
-              <IoSettingsOutline className="w-4" />
-            </div>
-            <ul
-              tabIndex={0}
-              className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-            >
-              <li>
-                <a onClick={deleteNotifications}>Delete all notifications</a>
-              </li>
-            </ul>
+    <div className="flex flex-col h-screen w-full max-w-screen-xl mx-auto">
+      <div className="flex justify-between items-center p-4 border-b border-gray-700 bg-gradient-to-r from-green-700 to-green-900 text-white">
+        <h1 className="font-bold text-2xl">Notifications</h1>
+        <div className="dropdown ">
+          <div tabIndex={0} role="button" className="m-1">
+            <IoSettingsOutline className="w-4" />
           </div>
+          <ul className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+            <li>
+              <button
+                onClick={deleteNotifications}
+                className="text-black hover:text-gray-900"
+              >
+                Delete all notifications
+              </button>
+            </li>
+          </ul>
         </div>
+      </div>
+      <div className="flex-1 overflow-y-auto">
         {isLoading && (
-          <div className="flex justify-center h-full items-center">
+          <div className="flex justify-center items-center h-full">
             <LoadingSpinner size="lg" />
           </div>
         )}
-        {notifications?.length === 0 && (
-          <div className="text-center p-4 font-bold">No notifications 🤔</div>
+        {!isLoading && notifications?.length === 0 && (
+          <div className="flex justify-center items-center h-full">
+            <p className="font-bold text-gray-600">No notifications 🤔</p>
+          </div>
         )}
         {notifications?.map((notification) => (
-          <div className="border-b border-gray-700" key={notification._id}>
-            <div className="flex gap-2 p-4">
-              {notification.type === "follow" && (
-                <FaRegUser className="w-7 h-7 text-green-700" />
+          <div
+            key={notification._id}
+            className="border-b border-gray-300 px-6 py-4"
+          >
+            <div className="flex items-center">
+              {notification.type === "follow" ? (
+                <FaRegUser className="w-8 h-8 text-green-700 mr-4" />
+              ) : (
+                <BiUpvote className="w-8 h-8 text-green-300 mr-4" />
               )}
-              {notification.type === "like" && (
-                <BiUpvote className="w-7 h-7 text-red-500" />
-              )}
-              <Link to={`/profile/${notification.from.username}`}>
-                <div className="avatar">
-                  <div className="w-8 rounded-full">
+              <div className="flex flex-col">
+                <Link
+                  to={`/profile/${notification.from.username}`}
+                  className="flex items-center space-x-1"
+                >
+                  <div className="w-10 h-10 rounded-full overflow-hidden">
                     <img
-                      src={
-                        notification.from.profileImg ||
-                        "/avatar-placeholder.png"
-                      }
+                      src={notification.from.profileImg || "/avatar-placeholder.png"}
+                      alt="Profile"
                     />
                   </div>
-                </div>
-                <div className="flex gap-1">
-                  <span className="font-bold">
-                    @{notification.from.username}
-                  </span>{" "}
+                  <span className="font-bold">@{notification.from.username}</span>
+                </Link>
+                <span className="text-gray-600">
                   {notification.type === "follow"
                     ? "followed you"
                     : "liked your post"}
-                </div>
-              </Link>
+                </span>
+              </div>
             </div>
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 };
+
 export default NotificationPage;
