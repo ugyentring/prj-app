@@ -35,8 +35,15 @@ const LoginPage = () => {
     },
   });
 
+  const [formError, setFormError] = useState("");
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Check if any field is empty
+    if (!formData.username || !formData.password) {
+      setFormError("Please fill in all fields");
+      return;
+    }
     loginMutation(formData);
   };
 
@@ -92,6 +99,7 @@ const LoginPage = () => {
                   {isPending ? "Loading..." : "Login"}
                 </button>
               </div>
+              {formError && <p className="text-red-500">{formError}</p>}
               {isError && <p className="text-red-500">{error.message}</p>}
             </form>
             <div className="flex flex-row gap-2 mt-4">

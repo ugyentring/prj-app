@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { MdOutlineMail, MdPassword, MdDriveFileRenameOutline } from "react-icons/md";
+import { MdOutlineMail, MdPassword, MdDriveFileRenameOutline, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
@@ -11,9 +11,14 @@ const SignUpPage = () => {
     username: "",
     fullName: "",
     password: "",
+    confirmPassword: "",
   });
 
-  const { mutate, isError, isPending, error } = useMutation({
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState("");
+
+  const { mutate, isError, isPending } = useMutation({
     mutationFn: async ({ email, username, fullName, password }) => {
       try {
         const res = await fetch("/api/auth/signup", {
@@ -39,11 +44,33 @@ const SignUpPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setError(""); // Reset error
+    // Validation
+    if (!formData.email || !formData.username || !formData.fullName || !formData.password || !formData.confirmPassword) {
+      setError("Please fill in all fields");
+      return;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    if (formData.password.length < 8 || !/[a-z]/.test(formData.password) || !/[A-Z]/.test(formData.password) || !/[0-9]/.test(formData.password) || !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(formData.password)) {
+      setError("Password should be more than 8 characters consisting of mixed characters (capital and small letters, special characters, and numbers)");
+      return;
+    }
     mutate(formData);
   };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   return (
@@ -108,7 +135,7 @@ const SignUpPage = () => {
               <label className="input input-bordered rounded flex items-center gap-2">
                 <MdPassword />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   className="input-field flex-1"
                   placeholder="Password"
                   name="password"
@@ -116,7 +143,26 @@ const SignUpPage = () => {
                   onChange={handleInputChange}
                   value={formData.password}
                 />
+                <button type="button" onClick={togglePasswordVisibility}>
+                  {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
+                </button>
               </label>
+              <label className="input input-bordered rounded flex items-center gap-2">
+                <MdPassword />
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  className="input-field flex-1"
+                  placeholder="Confirm Password"
+                  name="confirmPassword"
+                  autoComplete="off"
+                  onChange={handleInputChange}
+                  value={formData.confirmPassword}
+                />
+                <button type="button" onClick={toggleConfirmPasswordVisibility}>
+                  {showConfirmPassword ? <MdVisibilityOff /> : <MdVisibility />}
+                </button>
+              </label>
+              {error && <p className="text-red-500">{error}</p>}
               <button className="btn bg-green-900 text-white rounded-full">
                 {isPending ? "Loading..." : "Sign Up"}
               </button>
