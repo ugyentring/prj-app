@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import SignUpPage from "./pages/auth/signUp/SignUpPage";
 import LoginPage from "./pages/auth/login/LoginPage";
 import HomePage from "./pages/home/HomePage";
@@ -10,6 +10,8 @@ import { Toaster } from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "./components/common/LoadingSpinner";
 import Models from "./components/common/Models";
+import Transaction from "./components/common/Transaction";
+import { useState } from "react";
 
 const App = () => {
   const { data: authUser, isLoading } = useQuery({
@@ -30,8 +32,7 @@ const App = () => {
     retry: false,
   });
 
-  const location = useLocation();
-  const isModelsRoute = location.pathname === "/model";
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -44,7 +45,7 @@ const App = () => {
   return (
     <>
       <div className="flex max-w-6xl mx-auto">
-        {authUser && !isModelsRoute && <Sidebar />}
+        {authUser && <Sidebar />}
         <Routes>
           <Route
             path="/"
@@ -66,9 +67,14 @@ const App = () => {
             path="/notifications"
             element={authUser ? <NotificationPage /> : <Navigate to="/login" />}
           />
-          <Route path="/model" element={<Models />} />
+          <Route
+            path="/transaction"
+            element={authUser ? <Transaction /> : <Navigate to="/login" />}
+          />
+          {/* Remove the /model route */}
         </Routes>
-        {authUser && !isModelsRoute && <RightPanel />}
+        {authUser && <RightPanel />}
+        <Models isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
         <Toaster />
       </div>
     </>

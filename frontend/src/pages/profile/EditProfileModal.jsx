@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useUpdateUserProfile from "../../hooks/useUpdateUserProfile";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 const EditProfileModal = ({ authUser }) => {
   const [formData, setFormData] = useState({
@@ -41,7 +41,14 @@ const EditProfileModal = ({ authUser }) => {
         onClick={() =>
           document.getElementById("edit_profile_modal").showModal()
         }
-        style={{ backgroundColor: "#006400", color: "#ffffff", border: "none", padding: "8px 16px", borderRadius: "9999px", cursor: "pointer" }}
+        style={{
+          backgroundColor: "#006400",
+          color: "#ffffff",
+          border: "none",
+          padding: "8px 16px",
+          borderRadius: "9999px",
+          cursor: "pointer",
+        }}
       >
         Edit profile
       </button>
