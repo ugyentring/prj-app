@@ -21,6 +21,7 @@ const Post = ({ post }) => {
   const [isAwardDialogOpen, setIsAwardDialogOpen] = useState(false);
   const queryClient = useQueryClient();
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -118,6 +119,12 @@ const Post = ({ post }) => {
     }
   };
 
+  const postOwner = post.user;
+  const isLiked = post.likes.includes(authUser._id);
+
+  const isMyPost = authUser._id === post.user._id;
+  const formattedDate = formatPostDate(post.createdAt);
+
   const { mutate: deletePost, isPending: isDeleting } = useMutation({
     mutationFn: async () => {
       const res = await fetch(`/api/posts/${post._id}`, {
@@ -203,12 +210,6 @@ const Post = ({ post }) => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
   });
-
-  const postOwner = post.user;
-  const isLiked = post.likes.includes(authUser._id);
-
-  const isMyPost = authUser._id === post.user._id;
-  const formattedDate = formatPostDate(post.createdAt);
 
   const handleDeletePost = () => {
     deletePost();
@@ -335,22 +336,23 @@ const Post = ({ post }) => {
             >
               <div className="flex gap-2">
                 <img
-                  src={comment.user.profileImage || "/avatar-placeholder.png"}
+                  src={comment.user?.profileImage || "/avatar-placeholder.png"}
                   className="w-8 h-8 rounded-full"
+                  alt={comment.user?.username || "User avatar"}
                 />
                 <div>
                   <Link
-                    to={`/profile/${comment.user.username}`}
+                    to={`/profile/${comment.user?.username}`}
                     className="font-semibold text-sm text-gray-900 dark:text-gray-100"
                   >
-                    {comment.user.fullName}
+                    {comment.user?.fullName}
                   </Link>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     {comment.text}
                   </p>
                 </div>
               </div>
-              {authUser._id === comment.user._id && (
+              {authUser._id === comment.user?._id && (
                 <button
                   onClick={() => handleDeleteComment(comment._id)}
                   className="text-sm text-red-500 hover:text-red-600"
@@ -361,6 +363,7 @@ const Post = ({ post }) => {
             </div>
           ))}
         </div>
+
         {isAwardDialogOpen && (
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
             <div className="bg-white dark:bg-gray-800 p-8 rounded-lg max-w-md w-full relative">
