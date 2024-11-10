@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/register.css">
+    <link rel="stylesheet" href="./css/alert.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="registerContainer">
+        <div class="formContainer">
+            <form class="register-form">
+                <section class="formContent">
+                    <p>Register Now</p>
+                    <div class="login-container">
+                        <p>Be a part of the event! Register to secure your spot</p>
+                    </div>
+                </section>
+                <div class="input-container name">
+                    <label for="fname">Meta Mask Address</label>
+                    <input id="m-address" name="m-address" type="text" placeholder="Enter Your Meta Mask Address" />
+                </div>
+                <div class="input-container name">
+                    <label for="fname">Name</label>
+                    <input id="fname" name="fname" type="text" placeholder="Enter Your Name" />
+                </div>
+                <div class="input-container email">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" placeholder="Enter Your Email" />
+                </div>
+                <div class="input-container name">
+                    <label for="fname">Password</label>
+                    <input id="password" name="fname" type="password" />
+                </div>
+                <div class="input-container name">
+                    <label for="fname">Password Confirm</label>
+                    <input id="password-confirm" name="fname" type="password" />
+                </div>
+                <div class="regButton">
+                    <input type="submit" value="Register" />
+                </div>
+                <a href="login.html" style="margin-top: 1rem;">Already Have an Account</a>
+            </form>
+        </div>
+    </div>
+    <script src="./js/register.js"></script>
+    <script type="module" src="./backendJs/register.js"></script>
+</body>
+
+</html>

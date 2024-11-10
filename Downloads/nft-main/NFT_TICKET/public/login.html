@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/register.css">
+    <link rel="stylesheet" href="./css/alert.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <title>Login</title>
+</head>
+
+<body>
+    <div class="registerContainer">
+        <div class="formContainer">
+            <form class="login-form">
+                <section class="formContent">
+                    <p>Login</p>
+                    <div class="login-container">
+                    </div>
+                </section>
+                <div class="input-container email">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" placeholder="Enter Your Email" />
+                </div>
+                <div class="input-container name">
+                    <label for="fname">Password</label>
+                    <input id="password" name="fname" type="password" />
+                </div>
+                <div class="regButton">
+                    <input type="submit" value="Login" />
+                </div>
+                <a href="register.html" style="margin-top: 1rem;">Dont have a Account ?</a>
+            </form>
+        </div>
+    </div>
+    <script src="./js/register.js"></script>
+    <script type="module" src="./backendJs/login.js"></script>
+</body>
+
+</html>
