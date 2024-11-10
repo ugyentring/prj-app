@@ -1,0 +1,19 @@
+{
+  "scripts": {
+    "dev": "lite-server",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo 'No build step required.'"
+  },
+  "dependencies": {
+    "@alch/alchemy-web3": "^1.4.7",
+    "@openzeppelin/contracts": "^4.9.3",
+    "@truffle/hdwallet-provider": "^2.1.14",
+    "dotenv": "^16.3.1",
+    "lite-server": "^2.6.1",
+    "prompt-sync": "^4.2.0",
+    "web3": "^1.8.0"
+  },
+  "devDependencies": {
+    "@openzeppelin/test-helpers": "^0.5.16"
+  }
+}

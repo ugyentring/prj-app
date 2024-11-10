@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>DigiTicket</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <!-- FontAwesome CSS -->
+    <link rel="stylesheet" href="css/fontawesome-all.min.css">
+
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="css/swiper.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./css/alert.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.3.3/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@truffle/contract@4.3.5/dist/truffle-contract.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.6/dist/sweetalert2.all.min.js"></script>
+</head>
+
+<body class="contact-page">
+    <header class="site-header">
+        <div class="header-bar">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-10 col-lg-4">
+                        <h1 class="site-branding flex">
+                            <a href="/">DigiTicket</a>
+                        </h1>
+                    </div>
+
+                    <div class="col-2 col-lg-8">
+                        <nav class="site-navigation">
+                            <div class="hamburger-menu d-lg-none">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div><!-- .hamburger-menu -->
+
+                            <ul>
+                                <li><a href="index.html">HOME</a></li>
+                                <li><a href="ticket.html">Ticket</a></li>
+                                <!-- <li><a href="#">ARTISTS</a></li> -->
+                                <li><a href="events.html" id="event-nav">EVENT</a></li>
+                                <li>
+                                    <button class="Btn">
+
+                                        <div class="sign"><svg viewBox="0 0 512 512">
+                                                <path
+                                                    d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z">
+                                                </path>
+                                            </svg></div>
+
+                                        <div class="text">Logout</div>
+                                    </button>
+                                </li>
+                            </ul><!-- flex -->
+                        </nav><!-- .site-navigation -->
+                    </div><!-- .col-12 -->
+                </div><!-- .row -->
+            </div><!-- container-fluid -->
+        </div><!-- header-bar -->
+    </header><!-- .site-header -->
+
+    <div class="page-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="entry-header">
+                        <h2 class="entry-title">Events</h2>
+
+                        <ul class="breadcrumbs flex align-items-center">
+                            <li><a href="#">Home</a></li>
+                            <li>Event</li>
+                        </ul><!-- .breadcrumbs -->
+                    </div><!-- entry-header -->
+                </div><!-- col-12 -->
+            </div><!-- row -->
+        </div><!-- container -->
+    </div><!-- page-header -->
+
+    <div class="container">
+        <div class="main-content">
+
+
+            <div class="get-in-touch">
+                <div class="entry-header">
+                    <div class="entry-title" style="padding-top: 2rem">
+                        <p>EXPERIENCE THE EXTRAORDINARY</p>
+                        <h2>CREATE YOUR EVENT</h2>
+                    </div><!-- entry-title -->
+                </div><!-- entry-header -->
+
+                <div class="entry-content">
+                    <p>Are you planning an event? Look no further! Whether it's a corporate gathering, a celebration, or
+                        a special occasion,
+                        our event creation services are tailored to meet your unique needs. We're here to make your
+                        event memorable and stress-free.
+                        From inception to execution, trust us with your vision. Let's create something extraordinary
+                        together.</p>
+                </div><!-- entry-content -->
+
+                <div class="contact-form">
+                    <form class="createEvent-form">
+                        <div class="row">
+                            <div class="col-12">
+                                Event Photo
+                            </div><!-- col-4 -->
+                            <div class="col-12">
+                                <input type="file" placeholder="Event Photo" id="event-Photo">
+                            </div><!-- col-4 -->
+                            <div class="col-12 col-md-6">
+                                <input type="text" placeholder="Event Name" id="event-Name">
+                            </div><!-- col-4 -->
+
+                            <div class="col-12 col-md-6">
+                                <input type="text" placeholder="Ticket Name" id="ticket-Name">
+                            </div><!-- col-6 -->
+                            <div class="col-12 col-md-6">
+                                <input type="number" placeholder="Ticket Price" id="ticket-Price">
+                            </div><!-- col-6 -->
+                            <div class="col-12 col-md-6">
+                                <input type="number" placeholder="Ticket Number" id="ticket-Number">
+                            </div><!-- col-6 -->
+
+                            <div class="col-12 col-md-6">
+                                <input type="date" placeholder="Subject" id="start-Date">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <input type="date" placeholder="Subject" id="end-Date">
+                            </div>
+
+
+                            <div class="col-12">
+                                <textarea name="name" rows="8" cols="80" placeholder="Event Description "></textarea>
+                            </div>
+
+                            <div class="col-12 submit flex justify-content-center">
+                                <input type="submit" name="" value="Create Event" class="btn">
+                            </div>
+
+                        </div><!-- row -->
+                    </form>
+
+                </div><!-- contact-form -->
+            </div><!-- newsletter-subscribe -->
+        </div><!-- main-content -->
+    </div><!-- container -->
+
+    <footer class="site-footer">
+        <div class="footer-cover-title flex justify-content-center align-items-center">
+            <h2>DigiTicket</h2>
+        </div><!-- .site-footer -->
+
+        <div class="footer-content-wrapper">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="entry-title">
+                            <a href="#">DigiTicket</a>
+                        </div><!-- entry-title -->
+
+                        <div class="entry-mail">
+                            <a href="#">SAYHELLO@DigiTicket.COM</a>
+                        </div><!-- .entry-mail -->
+
+                        <div class="copyright-info">
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                            Copyright &copy;
+                            <script>document.write(new Date().getFullYear());</script> All rights reserved<a
+                                style="display: none;" href="https://colorlib.com" target="_blank">Colorlib</a>
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        </div><!-- copyright-info -->
+
+                        <div class="footer-social">
+                            <ul class="flex justify-content-center align-items-center">
+                                <li><a href="#"><i class="fab fa-pinterest"></i></a></li>
+                                <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                                <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                                <li><a href="#"><i class="fab fa-dribbble"></i></a></li>
+                                <li><a href="#"><i class="fab fa-behance"></i></a></li>
+                                <li><a href="#"><i class="fab fa-linkedin-in"></i></a></li>
+                            </ul>
+                        </div><!-- footer-social -->
+                    </div><!-- col -->
+                </div><!-- row -->
+            </div><!-- container -->
+        </div><!-- footer-content-wrapper -->
+    </footer><!-- site-footer -->
+
+    <script type='text/javascript' src='js/jquery.js'></script>
+    <script type='text/javascript' src='js/masonry.pkgd.min.js'></script>
+    <script type='text/javascript' src='js/jquery.collapsible.min.js'></script>
+    <script type='text/javascript' src='js/swiper.min.js'></script>
+    <script type='text/javascript' src='js/jquery.countdown.min.js'></script>
+    <script type='text/javascript' src='js/circle-progress.min.js'></script>
+    <script type='text/javascript' src='js/jquery.countTo.min.js'></script>
+    <script type='text/javascript' src='js/custom.js'></script>
+    <script type="module" src="./backendJs/logout.js"></script>
+    <script type="module" src="./backendJs/createEvent.js"></script>
+
+</body>
+
+</html>
