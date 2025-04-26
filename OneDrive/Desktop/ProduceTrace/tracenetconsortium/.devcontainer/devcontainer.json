@@ -1,0 +1,11 @@
+{
+    "name": "HLF-ProduceTrace",
+    "dockerComposeFile": [
+    "docker-compose.yml"
+    ],
+    "service": "development",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2":{}
+    },
+    }

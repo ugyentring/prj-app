@@ -1,0 +1,18 @@
+version: '3.8'
+
+networks:
+  uni-nets:
+
+services:
+  development:
+    build:
+      context: .
+      dockerfile: Dockerfile.Dev
+    # environment:
+    command: sleep infinity
+    stop_grace_period: 5s
+    volumes:
+      - ../..:/workspaces:cached
+    # depends_on:
+    networks:
+      - uni-nets
