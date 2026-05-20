@@ -25,15 +25,11 @@ const CreatePost = () => {
       try {
         const res = await fetch("/api/posts/create", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text, img, walletAddress }),
         });
         const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || "Something went wrong");
-        }
+        if (!res.ok) throw new Error(data.error || "Something went wrong");
         return data;
       } catch (error) {
         throw new Error(error);
@@ -57,58 +53,71 @@ const CreatePost = () => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => {
-        setImg(reader.result);
-      };
+      reader.onload = () => setImg(reader.result);
       reader.readAsDataURL(file);
     }
   };
 
   return (
-    <div className="flex p-4 items-start gap-4 border-b border-gray-300 shadow-md rounded-md">
-      <div className="avatar">
-        <div className="w-8 h-8 rounded-full overflow-hidden">
-          <img src={authUser.profileImage || "/avatar-placeholder.png"} alt="Profile" />
-        </div>
+    <div className="flex p-5 items-start gap-4">
+      <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 shrink-0">
+        <img
+          src={authUser?.profileImage || "/avatar-placeholder.png"}
+          alt="Profile"
+          className="w-full h-full object-cover"
+        />
       </div>
-      <form className="flex flex-col gap-2 w-full" onSubmit={handleSubmit}>
+      <form className="flex flex-col gap-3 w-full" onSubmit={handleSubmit}>
         <textarea
-          className="textarea w-full p-2 text-lg resize-none border border-gray-300 focus:outline-none rounded-md"
+          className="w-full bg-transparent text-base resize-none border-0 focus:outline-none placeholder:text-slate-400 min-h-[60px]"
           placeholder="What's on your mind?"
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
         <input
           type="text"
-          className="input w-full p-2 text-lg border border-gray-300 focus:outline-none rounded-md"
-          placeholder="Enter your metamask wallet address"
+          className="nn-input text-sm"
+          placeholder="Your MetaMask wallet address (for awards)"
           value={walletAddress}
           onChange={(e) => setWalletAddress(e.target.value)}
         />
         {img && (
-          <div className="relative w-72 mx-auto">
-            <IoCloseSharp
-              className="absolute top-2 right-2 text-gray-600 bg-white rounded-full w-6 h-6 cursor-pointer"
+          <div className="relative w-full max-w-md mx-auto">
+            <button
+              type="button"
+              className="absolute top-2 right-2 bg-slate-900/70 text-white rounded-full w-7 h-7 flex items-center justify-center hover:bg-slate-900 transition"
               onClick={() => {
                 setImg(null);
                 imgRef.current.value = null;
               }}
-            />
+            >
+              <IoCloseSharp />
+            </button>
             <img
               src={img}
-              className="w-full mx-auto h-52 object-cover rounded-md"
-              alt="Uploaded"
+              className="w-full h-64 object-cover rounded-xl border border-slate-200"
+              alt="Uploaded preview"
             />
           </div>
         )}
 
-        <div className="flex justify-between items-center border-t py-2 border-t-gray-300">
-          <div className="flex gap-1 items-center">
-            <IoImageOutline
-              className="w-6 h-6 cursor-pointer text-green-700"
+        <div className="flex justify-between items-center pt-3 border-t border-slate-100">
+          <div className="flex gap-2 items-center">
+            <button
+              type="button"
               onClick={() => imgRef.current.click()}
-            />
-            <BsEmojiHeartEyes className="w-5 h-5 cursor-pointer text-green-700" />
+              className="w-9 h-9 rounded-full text-emerald-600 hover:bg-emerald-50 flex items-center justify-center transition"
+              aria-label="Add image"
+            >
+              <IoImageOutline className="w-5 h-5" />
+            </button>
+            <button
+              type="button"
+              className="w-9 h-9 rounded-full text-emerald-600 hover:bg-emerald-50 flex items-center justify-center transition"
+              aria-label="Add emoji"
+            >
+              <BsEmojiHeartEyes className="w-5 h-5" />
+            </button>
           </div>
           <input
             type="file"
@@ -117,12 +126,12 @@ const CreatePost = () => {
             ref={imgRef}
             onChange={handleImgChange}
           />
-          <button className="btn bg-green-700 rounded-full btn-sm text-white px-4 hover:bg-green-600 focus:outline-none">
+          <button type="submit" className="nn-btn-primary" disabled={isPending}>
             {isPending ? "Posting..." : "Post"}
           </button>
         </div>
         {isError && (
-          <div className="text-red-500">
+          <div className="text-rose-500 text-sm">
             {error.message || "Something went wrong"}
           </div>
         )}

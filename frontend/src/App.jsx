@@ -37,52 +37,63 @@ const App = () => {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex justify-center items-center">
+      <div className="h-screen flex justify-center items-center bg-slate-50">
         <LoadingSpinner size="lg" />
       </div>
     );
   }
 
   return (
-    <>
-      <div className="flex max-w-6xl mx-auto">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <div className="flex max-w-7xl mx-auto gap-6 px-4">
         {authUser && <Sidebar />}
-        <Routes>
-          <Route
-            path="/"
-            element={authUser ? <HomePage /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/login"
-            element={!authUser ? <LoginPage /> : <Navigate to="/" />}
-          />
-          <Route
-            path="/signup"
-            element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
-          />
-          <Route
-            path="/profile/:username"
-            element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/notifications"
-            element={authUser ? <NotificationPage /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/transaction"
-            element={authUser ? <Transaction /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/forgot-password"
-            element={authUser ? <ForgotPassword /> : <Navigate to="/login" />}
-          />
-          {/* Remove the /model route */}
-        </Routes>
+        <main className="flex-1 min-w-0 py-4">
+          <Routes>
+            <Route
+              path="/"
+              element={authUser ? <HomePage /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/login"
+              element={!authUser ? <LoginPage /> : <Navigate to="/" />}
+            />
+            <Route
+              path="/signup"
+              element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
+            />
+            <Route
+              path="/profile/:username"
+              element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/notifications"
+              element={authUser ? <NotificationPage /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/transaction"
+              element={authUser ? <Transaction /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/forgot-password"
+              element={authUser ? <ForgotPassword /> : <Navigate to="/login" />}
+            />
+          </Routes>
+        </main>
         {authUser && <RightPanel />}
         <Models isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
-        <Toaster />
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            style: {
+              borderRadius: "12px",
+              background: "#0f172a",
+              color: "#fff",
+              fontSize: "14px",
+            },
+          }}
+        />
       </div>
-    </>
+    </div>
   );
 };
 

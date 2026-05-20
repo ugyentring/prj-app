@@ -68,43 +68,25 @@ const Post = ({ post }) => {
   async function addToBlockchain(e) {
     e.preventDefault();
     try {
-      if (!provider) {
-        console.error("Ethereum provider is not initialized");
-        return;
-      }
-
+      if (!provider) return;
       const receiver = e.target.walletAddress.value;
       const amountEth = e.target.amount.value.trim();
       const amountWei = ethers.utils.parseEther(amountEth);
       const message = e.target.message.value;
-
-      // Check the parsed values
-      console.log(`Receiver: ${receiver}`);
-      console.log(`Amount in ETH: ${amountEth}`);
-      console.log(`Amount in Wei: ${amountWei.toString()}`);
-      console.log(`Message: ${message}`);
-
       const signer = provider.getSigner();
-
       const contractInstance = new ethers.Contract(
         contractAddress,
         contractAbi,
         signer
       );
-
       const transaction = await contractInstance.addToBlockchain(
         receiver,
         amountWei,
         message,
-        {
-          value: amountWei,
-        }
+        { value: amountWei }
       );
-
       await transaction.wait();
       navigate("/");
-
-      console.log("Transaction successful!");
     } catch (error) {
       console.error("Error executing addToBlockchain:", error);
     }
@@ -114,6 +96,7 @@ const Post = ({ post }) => {
     try {
       await navigator.clipboard.writeText(walletAddress);
       setCopySuccess("Copied!");
+      setTimeout(() => setCopySuccess(""), 1500);
     } catch (err) {
       setCopySuccess("Failed to copy!");
     }
@@ -127,13 +110,9 @@ const Post = ({ post }) => {
 
   const { mutate: deletePost, isPending: isDeleting } = useMutation({
     mutationFn: async () => {
-      const res = await fetch(`/api/posts/${post._id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(`/api/posts/${post._id}`, { method: "DELETE" });
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Something went wrong");
-      }
+      if (!res.ok) throw new Error(data.error || "Something went wrong");
       return data;
     },
     onSuccess: () => {
@@ -148,40 +127,28 @@ const Post = ({ post }) => {
         method: "POST",
       });
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Something went wrong");
-      }
+      if (!res.ok) throw new Error(data.error || "Something went wrong");
       return data;
     },
     onSuccess: (updatedLikes) => {
       queryClient.setQueryData(["posts"], (oldData) => {
-        return oldData.map((p) => {
-          if (p._id === post._id) {
-            return { ...p, likes: updatedLikes };
-          }
-          return p;
-        });
+        return oldData.map((p) =>
+          p._id === post._id ? { ...p, likes: updatedLikes } : p
+        );
       });
     },
-    onError: (error) => {
-      toast.error(error.message);
-    },
+    onError: (error) => toast.error(error.message),
   });
 
   const { mutate: commentPost, isPending: isCommenting } = useMutation({
     mutationFn: async () => {
       const res = await fetch(`/api/posts/comment/${post._id}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: comment }),
       });
-
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Something went wrong");
-      }
+      if (!res.ok) throw new Error(data.error || "Something went wrong");
       return data;
     },
     onSuccess: () => {
@@ -189,9 +156,7 @@ const Post = ({ post }) => {
       setComment("");
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
-    onError: (error) => {
-      toast.error(error.message);
-    },
+    onError: (error) => toast.error(error.message),
   });
 
   const { mutate: deleteComment, isPending: isDeletingComment } = useMutation({
@@ -200,9 +165,7 @@ const Post = ({ post }) => {
         method: "DELETE",
       });
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Something went wrong");
-      }
+      if (!res.ok) throw new Error(data.error || "Something went wrong");
       return data;
     },
     onSuccess: () => {
@@ -211,230 +174,267 @@ const Post = ({ post }) => {
     },
   });
 
-  const handleDeletePost = () => {
-    deletePost();
-  };
-
+  const handleDeletePost = () => deletePost();
   const handlePostComment = (e) => {
     e.preventDefault();
     if (isCommenting) return;
     commentPost();
   };
-
-  const handleDeleteComment = (commentId) => {
-    deleteComment(commentId);
-  };
-
+  const handleDeleteComment = (commentId) => deleteComment(commentId);
   const handleLikePost = () => {
     if (isLiking) return;
     likePost();
   };
 
+  const shortAddress = post.walletAddress
+    ? `${post.walletAddress.slice(0, 6)}...${post.walletAddress.slice(-4)}`
+    : "";
+
   return (
-    <div className="flex gap-4 items-start p-4 border-b border-gray-200 dark:border-gray-700">
-      <div className="avatar">
-        <Link
-          to={`/profile/${postOwner.username}`}
-          className="w-10 h-10 rounded-full overflow-hidden"
-        >
-          <img src={postOwner.profileImage || "/avatar-placeholder.png"} />
-        </Link>
-      </div>
-      <div className="flex flex-col flex-1">
+    <article className="flex gap-4 items-start p-5 border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50 transition">
+      <Link
+        to={`/profile/${postOwner.username}`}
+        className="w-11 h-11 rounded-full overflow-hidden bg-slate-100 shrink-0"
+      >
+        <img
+          src={postOwner.profileImage || "/avatar-placeholder.png"}
+          alt={postOwner.fullName}
+          className="w-full h-full object-cover"
+        />
+      </Link>
+      <div className="flex flex-col flex-1 min-w-0">
         <div className="flex gap-2 items-center">
           <Link
             to={`/profile/${postOwner.username}`}
-            className="font-bold text-lg"
+            className="font-semibold text-slate-900 hover:underline"
           >
             {postOwner.fullName}
           </Link>
-          <span className="text-gray-500 dark:text-gray-400 flex gap-1 text-sm">
-            <Link to={`/profile/${postOwner.username}`}>
+          <span className="text-slate-400 text-sm flex gap-1.5 items-center">
+            <Link
+              to={`/profile/${postOwner.username}`}
+              className="hover:underline"
+            >
               @{postOwner.username}
             </Link>
             <span>·</span>
             <span>{formattedDate}</span>
           </span>
           {isMyPost && (
-            <span className="flex justify-end flex-1">
+            <span className="ml-auto">
               {!isDeleting ? (
-                <FaTrash
-                  className="cursor-pointer hover:text-red-500"
+                <button
+                  className="p-2 rounded-full text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition"
                   onClick={handleDeletePost}
-                />
+                  aria-label="Delete post"
+                >
+                  <FaTrash className="w-3.5 h-3.5" />
+                </button>
               ) : (
                 <LoadingSpinner size="sm" />
               )}
             </span>
           )}
         </div>
-        <div className="flex flex-col gap-3 overflow-hidden ">
-          <span className="text-gray-900 dark:text-gray-100">{post.text}</span>
-          <span
-            className="cursor-pointer bg-gray-100 dark:bg-gray-800 p-2 rounded text-sm font-semibold text-gray-700 dark:text-gray-300"
-            onClick={() => copyToClipBoard(post.walletAddress)}
-          >
-            {post.walletAddress}
-          </span>
-          {copySuccess && (
-            <span className="text-sm text-green-500">{copySuccess}</span>
+
+        <div className="flex flex-col gap-3 mt-1">
+          {post.text && (
+            <p className="text-slate-800 leading-relaxed whitespace-pre-wrap">
+              {post.text}
+            </p>
+          )}
+          {post.walletAddress && (
+            <button
+              type="button"
+              onClick={() => copyToClipBoard(post.walletAddress)}
+              className="self-start inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 transition text-slate-700 text-xs font-mono px-3 py-1.5 rounded-full"
+              title={post.walletAddress}
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              {shortAddress}
+              {copySuccess && (
+                <span className="text-emerald-600 ml-1">{copySuccess}</span>
+              )}
+            </button>
           )}
           {post.img && (
             <img
               src={post.img}
-              className="h-80 object-contain rounded-lg border border-gray-300 dark:border-gray-700"
+              className="max-h-96 w-full object-cover rounded-xl border border-slate-200"
               alt=""
             />
           )}
         </div>
-        <div className="flex justify-between mt-3">
-          <div className="flex gap-4 items-center">
-            <div
-              className="flex gap-2 items-center cursor-pointer text-gray-500 dark:text-gray-400"
+
+        <div className="flex items-center justify-between mt-4">
+          <div className="flex gap-1 items-center">
+            <button
               onClick={handleLikePost}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition ${
+                isLiked
+                  ? "text-emerald-700 bg-emerald-50"
+                  : "text-slate-500 hover:text-emerald-700 hover:bg-emerald-50"
+              }`}
             >
-              <BiUpvote className={isLiked ? "text-green-700" : ""} />
-              <span>{post.likes.length}</span>
-              <span>Vote</span>
-            </div>
-            <div className="flex gap-2 items-center text-gray-500 dark:text-gray-400">
-              <BiComment />
-              <span>{post.comments.length}</span>
-              <span>Comment</span>
+              <BiUpvote className="w-4 h-4" />
+              <span className="font-medium">{post.likes.length}</span>
+              <span className="hidden sm:inline">Vote</span>
+            </button>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm text-slate-500">
+              <BiComment className="w-4 h-4" />
+              <span className="font-medium">{post.comments.length}</span>
+              <span className="hidden sm:inline">Comments</span>
             </div>
           </div>
-          <div className="text-gray-500 dark:text-gray-400 cursor-pointer flex justify-center items-center mr-4 gap-1">
-            <span>Award </span>
-            <CiGift onClick={() => setIsAwardDialogOpen(true)} />
-          </div>
+          <button
+            onClick={() => setIsAwardDialogOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm text-amber-600 hover:bg-amber-50 transition"
+          >
+            <CiGift className="w-5 h-5" />
+            <span className="font-semibold hidden sm:inline">Award</span>
+          </button>
         </div>
-        <form className="flex gap-2 mt-3" onSubmit={handlePostComment}>
+
+        <form
+          className="flex gap-2 mt-4 items-stretch"
+          onSubmit={handlePostComment}
+        >
           <input
             type="text"
-            className="flex-1 border border-gray-300 dark:border-gray-700 p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
+            className="nn-input flex-1"
             placeholder="Add a comment..."
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             required
           />
           {!isCommenting ? (
-            <button
-              type="submit"
-              className="px-4 py-2 bg-green-700 text-white rounded hover:bg-success"
-            >
+            <button type="submit" className="nn-btn-primary">
               Comment
             </button>
           ) : (
-            <LoadingSpinner size="sm" />
+            <div className="flex items-center px-4">
+              <LoadingSpinner size="sm" />
+            </div>
           )}
         </form>
-        <div className="mt-3">
-          {post.comments.map((comment) => (
-            <div
-              key={comment._id}
-              className="flex justify-between items-start bg-gray-100 dark:bg-gray-800 p-2 rounded mb-2"
-            >
-              <div className="flex gap-2">
-                <img
-                  src={comment.user?.profileImage || "/avatar-placeholder.png"}
-                  className="w-8 h-8 rounded-full"
-                  alt={comment.user?.username || "User avatar"}
-                />
-                <div>
-                  <Link
-                    to={`/profile/${comment.user?.username}`}
-                    className="font-semibold text-sm text-gray-900 dark:text-gray-100"
-                  >
-                    {comment.user?.fullName}
-                  </Link>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {comment.text}
-                  </p>
+
+        {post.comments.length > 0 && (
+          <div className="mt-4 space-y-2">
+            {post.comments.map((c) => (
+              <div
+                key={c._id}
+                className="flex justify-between items-start gap-3 bg-slate-50 p-3 rounded-xl"
+              >
+                <div className="flex gap-3 min-w-0">
+                  <img
+                    src={c.user?.profileImage || "/avatar-placeholder.png"}
+                    className="w-8 h-8 rounded-full object-cover shrink-0"
+                    alt={c.user?.username || "User avatar"}
+                  />
+                  <div className="min-w-0">
+                    <Link
+                      to={`/profile/${c.user?.username}`}
+                      className="font-semibold text-sm text-slate-900 hover:underline"
+                    >
+                      {c.user?.fullName}
+                    </Link>
+                    <p className="text-sm text-slate-600 mt-0.5 break-words">
+                      {c.text}
+                    </p>
+                  </div>
                 </div>
+                {authUser._id === c.user?._id && (
+                  <button
+                    onClick={() => handleDeleteComment(c._id)}
+                    className="text-xs text-rose-500 hover:text-rose-600 font-medium shrink-0"
+                  >
+                    {!isDeletingComment ? "Delete" : <LoadingSpinner size="sm" />}
+                  </button>
+                )}
               </div>
-              {authUser._id === comment.user?._id && (
-                <button
-                  onClick={() => handleDeleteComment(comment._id)}
-                  className="text-sm text-red-500 hover:text-red-600"
-                >
-                  {!isDeletingComment ? "Delete" : <LoadingSpinner size="sm" />}
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {isAwardDialogOpen && (
-          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg max-w-md w-full relative">
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-slate-900/60 backdrop-blur-sm p-4">
+            <div className="bg-white p-6 rounded-2xl max-w-md w-full relative shadow-xl border border-slate-200">
               <button
-                className="absolute top-2 right-2 text-gray-500 dark:text-gray-400"
+                className="absolute top-3 right-3 w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-500 transition"
                 onClick={() => setIsAwardDialogOpen(false)}
               >
                 <FontAwesomeIcon icon={faTimes} />
               </button>
-              <h2 className="text-2xl font-bold mb-4">Send Award</h2>
-              <div>
-                {!isConnected ? (
-                  <button
-                    className="w-full bg-green-700 text-white p-2 rounded hover:success"
-                    onClick={connectToMetamask}
-                  >
-                    Connect Wallet
-                  </button>
-                ) : (
-                  <form onSubmit={addToBlockchain}>
-                    <div className="mb-4">
-                      <label className="block text-gray-700 dark:text-gray-300 mb-2">
-                        Wallet Address
-                      </label>
-                      <input
-                        type="text"
-                        name="walletAddress"
-                        id="walletAddress"
-                        value={post.walletAddress}
-                        readOnly
-                        className="w-full border border-gray-300 dark:border-gray-700 p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
-                        required
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label className="block text-gray-700 dark:text-gray-300 mb-2">
-                        Amount (ETH)
-                      </label>
-                      <input
-                        type="number"
-                        name="amount"
-                        id="amount"
-                        step="0.01"
-                        className="w-full border border-gray-300 dark:border-gray-700 p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
-                        required
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label className="block text-gray-700 dark:text-gray-300 mb-2">
-                        Message
-                      </label>
-                      <textarea
-                        name="message"
-                        id="message"
-                        className="w-full border border-gray-300 dark:border-gray-700 p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      className="w-full bg-green-700 text-white p-2 rounded hover:bg-success"
-                    >
-                      Send
-                    </button>
-                  </form>
-                )}
+              <div className="mb-5">
+                <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
+                  <CiGift className="w-7 h-7" />
+                </div>
+                <h2 className="font-display text-xl font-bold text-slate-900">
+                  Send an Award
+                </h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  Reward this creator with ETH on-chain.
+                </p>
               </div>
+              {!isConnected ? (
+                <button
+                  className="nn-btn-primary w-full"
+                  onClick={connectToMetamask}
+                >
+                  Connect Wallet
+                </button>
+              ) : (
+                <form onSubmit={addToBlockchain} className="flex flex-col gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">
+                      Wallet Address
+                    </label>
+                    <input
+                      type="text"
+                      name="walletAddress"
+                      id="walletAddress"
+                      value={post.walletAddress}
+                      readOnly
+                      className="nn-input font-mono text-xs bg-slate-50"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">
+                      Amount (ETH)
+                    </label>
+                    <input
+                      type="number"
+                      name="amount"
+                      id="amount"
+                      step="0.01"
+                      placeholder="0.05"
+                      className="nn-input"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">
+                      Message
+                    </label>
+                    <textarea
+                      name="message"
+                      id="message"
+                      rows={3}
+                      placeholder="Great post!"
+                      className="nn-input resize-none"
+                    />
+                  </div>
+                  <button type="submit" className="nn-btn-primary w-full">
+                    Send Award
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         )}
       </div>
-    </div>
+    </article>
   );
 };
 

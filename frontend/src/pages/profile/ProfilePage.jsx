@@ -33,16 +33,10 @@ const ProfilePage = () => {
   } = useQuery({
     queryKey: ["userProfile"],
     queryFn: async () => {
-      try {
-        const res = await fetch(`/api/users/profile/${username}`);
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || "Something went wrong");
-        }
-        return data;
-      } catch (error) {
-        throw new Error(error);
-      }
+      const res = await fetch(`/api/users/profile/${username}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Something went wrong");
+      return data;
     },
   });
 
@@ -68,43 +62,51 @@ const ProfilePage = () => {
   }, [username, refetch]);
 
   return (
-    <div className="flex-[4_4_0] min-h-screen">
-      {/* HEADER */}
-      {(isLoading || isRefetching) && <ProfileHeaderSkeleton />}
+    <div className="flex flex-col gap-4">
+      {(isLoading || isRefetching) && (
+        <div className="nn-card overflow-hidden">
+          <ProfileHeaderSkeleton />
+        </div>
+      )}
       {!isLoading && !isRefetching && !user && (
-        <p className="text-center text-lg mt-4">User not found</p>
+        <div className="nn-card p-10 text-center">
+          <p className="font-semibold text-slate-900">User not found</p>
+        </div>
       )}
 
-      <div className="flex flex-col">
-        {!isLoading && !isRefetching && user && (
-          <>
-            {/* Back and User Info */}
-            <div className="flex gap-10 px-4 py-2 items-center">
-              <Link to="/">
+      {!isLoading && !isRefetching && user && (
+        <>
+          <div className="nn-card overflow-hidden">
+            {/* Top bar */}
+            <div className="flex gap-4 px-5 py-3 items-center border-b border-slate-100">
+              <Link
+                to="/"
+                className="w-9 h-9 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-600 transition"
+              >
                 <FaArrowLeft className="w-4 h-4" />
               </Link>
-              <div className="flex flex-col">
-                <p className="font-bold text-lg">{user?.fullName}</p>
-                <span className="text-sm text-slate-500">
+              <div>
+                <p className="font-semibold text-slate-900">{user?.fullName}</p>
+                <span className="text-xs text-slate-500">
                   {POSTS?.length} posts
                 </span>
               </div>
             </div>
 
-            {/* Cover Image */}
+            {/* Cover */}
             <div className="relative group/cover">
               <img
                 src={coverImage || user?.coverImage || "/cover.png"}
-                className="h-52 w-full object-cover"
+                className="h-56 w-full object-cover"
                 alt="cover image"
               />
               {isMyProfile && (
-                <div
-                  className="absolute top-2 right-2 rounded-full p-2 bg-gray-800 bg-opacity-75 cursor-pointer opacity-0 group-hover/cover:opacity-100 transition duration-200"
+                <button
+                  className="absolute top-3 right-3 rounded-full p-2 bg-slate-900/70 hover:bg-slate-900 text-white opacity-0 group-hover/cover:opacity-100 transition"
                   onClick={() => coverImgRef.current.click()}
                 >
-                  <MdEdit className="w-5 h-5 text-white" />
-                </div>
+                  <MdEdit className="w-4 h-4" />
+                </button>
               )}
               <input
                 type="file"
@@ -121,34 +123,40 @@ const ProfilePage = () => {
                 onChange={(e) => handleImgChange(e, "profileImage")}
               />
 
-              {/* User Avatar */}
-              <div className="avatar absolute -bottom-16 left-4">
-                <div className="w-32 rounded-full relative group/avatar">
+              {/* Avatar */}
+              <div className="absolute -bottom-14 left-5">
+                <div className="w-28 h-28 rounded-full ring-4 ring-white overflow-hidden bg-slate-100 relative group/avatar">
                   <img
                     src={
                       profileImage ||
                       user?.profileImage ||
                       "/avatar-placeholder.png"
                     }
+                    className="w-full h-full object-cover"
+                    alt={user?.fullName}
                   />
                   {isMyProfile && (
-                    <div className="absolute top-5 right-3 p-1 bg-primary rounded-full group-hover/avatar:opacity-100 opacity-0 cursor-pointer">
-                      <MdEdit
-                        className="w-4 h-4 text-white"
-                        onClick={() => profileImgRef.current.click()}
-                      />
-                    </div>
+                    <button
+                      onClick={() => profileImgRef.current.click()}
+                      className="absolute bottom-1 right-1 p-1.5 bg-emerald-600 hover:bg-emerald-700 rounded-full opacity-0 group-hover/avatar:opacity-100 transition"
+                    >
+                      <MdEdit className="w-3.5 h-3.5 text-white" />
+                    </button>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Profile Actions */}
-            <div className="flex justify-end px-4 mt-5">
+            {/* Actions */}
+            <div className="flex justify-end px-5 mt-4 gap-2">
               {isMyProfile && <EditProfileModal authUser={authUser} />}
               {!isMyProfile && (
                 <button
-                  className="btn btn-outline rounded-full btn-sm"
+                  className={
+                    amIFollowing
+                      ? "nn-btn-ghost"
+                      : "nn-btn-primary"
+                  }
                   onClick={() => follow(user?._id)}
                 >
                   {isPending
@@ -160,7 +168,7 @@ const ProfilePage = () => {
               )}
               {(coverImage || profileImage) && (
                 <button
-                  className="btn bg-green-700 rounded-full btn-sm text-white px-4 ml-2"
+                  className="nn-btn-primary"
                   onClick={async () => {
                     await updateProfile({ coverImage, profileImage });
                     setProfileImg(null);
@@ -172,81 +180,89 @@ const ProfilePage = () => {
               )}
             </div>
 
-            {/* User Information */}
-            <div className="flex flex-col gap-4 mt-14 px-4">
-              <div className="flex flex-col">
-                <span className="font-bold text-lg">{user?.fullName}</span>
-                <span className="text-sm text-slate-500">
-                  @{user?.username}
-                </span>
-                <span className="text-sm my-1">{user?.bio}</span>
+            {/* User Info */}
+            <div className="flex flex-col gap-3 mt-12 px-5 pb-5">
+              <div>
+                <h2 className="font-display font-bold text-xl text-slate-900">
+                  {user?.fullName}
+                </h2>
+                <p className="text-sm text-slate-500">@{user?.username}</p>
+                {user?.bio && (
+                  <p className="text-sm text-slate-700 mt-2 leading-relaxed">
+                    {user.bio}
+                  </p>
+                )}
               </div>
 
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-4 flex-wrap text-sm">
                 {user?.link && (
-                  <div className="flex gap-1 items-center">
-                    <FaLink className="w-3 h-3 text-green-700" />
+                  <div className="flex gap-1.5 items-center">
+                    <FaLink className="w-3 h-3 text-emerald-700" />
                     <a
                       href={user?.link}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-sm text-green-700 hover:underline"
+                      className="text-emerald-700 hover:underline"
                     >
                       {user?.link}
                     </a>
                   </div>
                 )}
-                <div className="flex gap-2 items-center">
-                  <IoCalendarOutline className="w-4 h-4 text-slate-500" />
-                  <span className="text-sm text-slate-500">
-                    {memberSinceDate}
-                  </span>
+                <div className="flex gap-1.5 items-center text-slate-500">
+                  <IoCalendarOutline className="w-4 h-4" />
+                  <span>{memberSinceDate}</span>
                 </div>
               </div>
 
-              <div className="flex gap-2">
-                <div className="flex gap-1 items-center">
-                  <span className="font-bold text-xs">
+              <div className="flex gap-5 pt-2">
+                <div className="flex gap-1.5 items-baseline">
+                  <span className="font-bold text-slate-900">
                     {user?.following.length}
                   </span>
-                  <span className="text-slate-500 text-xs">Following</span>
+                  <span className="text-slate-500 text-sm">Following</span>
                 </div>
-                <div className="flex gap-1 items-center">
-                  <span className="font-bold text-xs">
+                <div className="flex gap-1.5 items-baseline">
+                  <span className="font-bold text-slate-900">
                     {user?.followers.length}
                   </span>
-                  <span className="text-slate-500 text-xs">Followers</span>
+                  <span className="text-slate-500 text-sm">Followers</span>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Posts and Likes Tabs */}
-            <div className="flex w-full border-b border-gray-700 mt-4">
-              <div
-                className="flex justify-center flex-1 p-3 hover:bg-success transition duration-300 relative cursor-pointer"
-                onClick={() => setFeedType("posts")}
-              >
-                Posts
-                {feedType === "posts" && (
-                  <div className="absolute bottom-0 w-10 h-1 rounded-full bg-primary" />
-                )}
-              </div>
-              <div
-                className="flex justify-center flex-1 p-3 text-slate-500 hover:bg-success transition duration-300 relative cursor-pointer"
-                onClick={() => setFeedType("likes")}
-              >
-                Likes
-                {feedType === "likes" && (
-                  <div className="absolute bottom-0 w-10 h-1 rounded-full bg-primary" />
-                )}
-              </div>
+          {/* Tabs */}
+          <div className="nn-card overflow-hidden">
+            <div className="flex border-b border-slate-100">
+              {[
+                { id: "posts", label: "Posts" },
+                { id: "likes", label: "Likes" },
+              ].map((tab) => {
+                const active = feedType === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setFeedType(tab.id)}
+                    className={`flex-1 py-3 text-sm font-semibold transition relative ${
+                      active
+                        ? "text-emerald-700"
+                        : "text-slate-500 hover:text-slate-900"
+                    }`}
+                  >
+                    {tab.label}
+                    <span
+                      className={`absolute left-1/2 -translate-x-1/2 bottom-0 h-1 w-10 rounded-t-full ${
+                        active ? "bg-emerald-600" : "bg-transparent"
+                      }`}
+                    />
+                  </button>
+                );
+              })}
             </div>
-          </>
-        )}
-
-        {/* Posts Component */}
-        <Posts feedType={feedType} username={username} userId={user?._id} />
-      </div>
+            <Posts feedType={feedType} username={username} userId={user?._id} />
+          </div>
+        </>
+      )}
     </div>
   );
 };

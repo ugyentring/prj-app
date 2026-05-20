@@ -13,105 +13,114 @@ const NotificationPage = () => {
   const { data: notifications, isLoading } = useQuery({
     queryKey: ["notifications"],
     queryFn: async () => {
-      try {
-        const res = await fetch("/api/notifications");
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || "Something went wrong");
-        }
-        return data;
-      } catch (error) {
-        throw new Error(error.message);
-      }
+      const res = await fetch("/api/notifications");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Something went wrong");
+      return data;
     },
   });
 
   const { mutate: deleteNotifications } = useMutation({
     mutationFn: async () => {
-      try {
-        const res = await fetch("/api/notifications", {
-          method: "DELETE",
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || "Something went wrong");
-        }
-        return data;
-      } catch (error) {
-        throw new Error(error.message);
-      }
+      const res = await fetch("/api/notifications", { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Something went wrong");
+      return data;
     },
     onSuccess: () => {
-      toast.success("Notifications deleted successfully");
+      toast.success("Notifications cleared");
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
-    onError: (error) => {
-      toast.error(error.message);
-    },
+    onError: (error) => toast.error(error.message),
   });
 
   return (
-    <div className="flex flex-col h-screen w-full max-w-screen-xl mx-auto">
-      <div className="flex justify-between items-center p-4 border-b border-gray-700 bg-gradient-to-r from-green-700 to-green-900 text-white">
-        <h1 className="font-bold text-2xl">Notifications</h1>
-        <div className="dropdown ">
-          <div tabIndex={0} role="button" className="m-1">
-            <IoSettingsOutline className="w-4" />
-          </div>
-          <ul className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-            <li>
-              <button
-                onClick={deleteNotifications}
-                className="text-black hover:text-gray-900"
-              >
-                Delete all notifications
-              </button>
-            </li>
-          </ul>
+    <div className="nn-card overflow-hidden">
+      <div className="flex justify-between items-center p-5 border-b border-slate-100">
+        <div>
+          <h1 className="font-display font-bold text-2xl text-slate-900">
+            Notifications
+          </h1>
+          <p className="text-sm text-slate-500 mt-0.5">
+            Activity from people you follow.
+          </p>
         </div>
+        <details className="relative">
+          <summary className="list-none cursor-pointer w-9 h-9 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-600 transition">
+            <IoSettingsOutline className="w-5 h-5" />
+          </summary>
+          <div className="absolute right-0 mt-2 w-56 nn-card p-2 z-10">
+            <button
+              onClick={deleteNotifications}
+              className="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-rose-50 hover:text-rose-600 transition"
+            >
+              Delete all notifications
+            </button>
+          </div>
+        </details>
       </div>
-      <div className="flex-1 overflow-y-auto">
+
+      <div>
         {isLoading && (
-          <div className="flex justify-center items-center h-full">
+          <div className="flex justify-center items-center py-16">
             <LoadingSpinner size="lg" />
           </div>
         )}
         {!isLoading && notifications?.length === 0 && (
-          <div className="flex justify-center items-center h-full">
-            <p className="font-bold text-gray-600">No notifications 🤔</p>
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center mb-3">
+              <BiUpvote className="w-7 h-7 text-slate-400" />
+            </div>
+            <p className="font-semibold text-slate-900">All caught up</p>
+            <p className="text-sm text-slate-500 mt-1">
+              No new notifications right now.
+            </p>
           </div>
         )}
         {notifications?.map((notification) => (
           <div
             key={notification._id}
-            className="border-b border-gray-300 px-6 py-4"
+            className="flex items-center gap-4 px-5 py-4 border-b border-slate-100 last:border-b-0 hover:bg-slate-50/60 transition"
           >
-            <div className="flex items-center">
+            <div
+              className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                notification.type === "follow"
+                  ? "bg-emerald-50 text-emerald-600"
+                  : "bg-amber-50 text-amber-600"
+              }`}
+            >
               {notification.type === "follow" ? (
-                <FaRegUser className="w-8 h-8 text-green-700 mr-4" />
+                <FaRegUser className="w-4 h-4" />
               ) : (
-                <BiUpvote className="w-8 h-8 text-green-300 mr-4" />
+                <BiUpvote className="w-5 h-5" />
               )}
-              <div className="flex flex-col">
-                <Link
-                  to={`/profile/${notification.from.username}`}
-                  className="flex items-center space-x-1"
-                >
-                  <div className="w-10 h-10 rounded-full overflow-hidden">
-                    <img
-                      src={notification.from.profileImg || "/avatar-placeholder.png"}
-                      alt="Profile"
-                    />
-                  </div>
-                  <span className="font-bold">@{notification.from.username}</span>
-                </Link>
-                <span className="text-gray-600">
-                  {notification.type === "follow"
-                    ? "followed you"
-                    : "liked your post"}
-                </span>
-              </div>
             </div>
+            <Link
+              to={`/profile/${notification.from.username}`}
+              className="flex items-center gap-3 min-w-0 flex-1"
+            >
+              <div className="w-9 h-9 rounded-full overflow-hidden bg-slate-100 shrink-0">
+                <img
+                  src={
+                    notification.from.profileImg || "/avatar-placeholder.png"
+                  }
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm">
+                  <span className="font-semibold text-slate-900">
+                    @{notification.from.username}
+                  </span>{" "}
+                  <span className="text-slate-500">
+                    {notification.type === "follow"
+                      ? "started following you"
+                      : "liked your post"}
+                  </span>
+                </p>
+              </div>
+            </Link>
           </div>
         ))}
       </div>
